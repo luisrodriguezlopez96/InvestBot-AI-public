@@ -7,7 +7,7 @@
 [![Streamlit](https://img.shields.io/badge/Streamlit-1.31+-FF4B4B?logo=streamlit&logoColor=white)](https://streamlit.io/)
 [![XGBoost](https://img.shields.io/badge/XGBoost-2.0+-orange)](https://xgboost.readthedocs.io/)
 [![SHAP](https://img.shields.io/badge/XAI-SHAP-blueviolet)](https://shap.readthedocs.io/)
-[![License](https://img.shields.io/badge/License-MIT-green)]()
+[![License](https://img.shields.io/badge/License-MIT-green)](LICENSE)
 [![Estado](https://img.shields.io/badge/Estado-En%20desarrollo-yellow)]()
 
 ---
@@ -25,6 +25,8 @@
 
 El proyecto opera sobre un universo de **7 ETFs europeos** y utiliza señales macroeconómicas (VIX, EUR/USD) como inputs principales del modelo predictivo.
 
+![Home Dashboard](screenshot-home.png)
+
 ---
 
 ## 🏆 Resultados Clave
@@ -41,6 +43,8 @@ El proyecto opera sobre un universo de **7 ETFs europeos** y utiliza señales ma
 
 **Variables más relevantes (SHAP):**
 `eurusd_change_5d` > `vix_change_5d` > `eurusd` > `rsi_14` > `vol_21d`
+
+![Análisis SHAP — Importancia de variables](screenshot-shap.png)
 
 ---
 
@@ -77,6 +81,18 @@ flowchart LR
     E --> F[Comparar con cartera actual]
     F --> G[Decidir rebalanceo]
 ```
+
+---
+
+## 📸 Capturas de pantalla
+
+### Gestión de Cartera
+
+![Vista de cartera](screenshot-cartera.png)
+
+### Análisis de Escenarios
+
+![Análisis de escenarios](screenshot-escenarios.png)
 
 ---
 
