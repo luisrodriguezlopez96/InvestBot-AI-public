@@ -1,0 +1,311 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>InvestBot‑AI | Plataforma de Inversión Cuantitativa</title>
+
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700&display=swap" rel="stylesheet">
+
+    <style>
+        body {
+            margin: 0;
+            font-family: "Inter", sans-serif;
+            background-color: #f7f9fc;
+            color: #1a1a1a;
+        }
+
+        /* LANGUAGE SWITCHER */
+        #lang-toggle {
+            display: none;
+        }
+
+        .lang-switcher {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            background: white;
+            padding: 10px 18px;
+            border-radius: 10px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+            cursor: pointer;
+            font-weight: 600;
+            z-index: 999;
+        }
+
+        /* Hide EN by default */
+        .en { display: none; }
+
+        /* When toggled, hide ES and show EN */
+        #lang-toggle:checked ~ .content .es { display: none; }
+        #lang-toggle:checked ~ .content .en { display: block; }
+
+        /* HERO */
+        .hero {
+            background: linear-gradient(135deg, #0a2540, #193b63);
+            color: white;
+            padding: 120px 20px;
+            text-align: center;
+        }
+
+        .hero h1 {
+            font-size: 3.2rem;
+            margin-bottom: 15px;
+            font-weight: 700;
+        }
+
+        .hero p {
+            font-size: 1.3rem;
+            opacity: 0.9;
+            max-width: 800px;
+            margin: 0 auto;
+        }
+
+        .cta-btn {
+            display: inline-block;
+            margin-top: 30px;
+            padding: 14px 28px;
+            background: #00c46b;
+            color: #0a2540;
+            font-weight: 700;
+            border-radius: 10px;
+            text-decoration: none;
+            font-size: 1.1rem;
+        }
+
+        .cta-btn:hover {
+            background: #02a85c;
+        }
+
+        /* SECTIONS */
+        .section {
+            max-width: 1100px;
+            margin: 70px auto;
+            padding: 0 20px;
+        }
+
+        h2 {
+            font-size: 2.2rem;
+            color: #0a2540;
+            margin-bottom: 20px;
+        }
+
+        .card {
+            background: white;
+            padding: 30px;
+            border-radius: 14px;
+            box-shadow: 0 4px 14px rgba(0,0,0,0.08);
+            margin-bottom: 25px;
+        }
+
+        /* TABLE */
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 15px;
+        }
+
+        table th, table td {
+            padding: 14px;
+            border-bottom: 1px solid #ddd;
+            text-align: center;
+        }
+
+        table th {
+            background: #0a2540;
+            color: white;
+        }
+
+        /* GRID */
+        .grid-3 {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 25px;
+        }
+
+        /* FAQ */
+        .faq-item {
+            margin-bottom: 20px;
+        }
+
+        .faq-item h4 {
+            margin-bottom: 8px;
+            color: #0a2540;
+        }
+
+        /* FOOTER */
+        footer {
+            text-align: center;
+            padding: 50px;
+            background: #0a2540;
+            color: white;
+            margin-top: 80px;
+        }
+    </style>
+</head>
+
+<body>
+
+<!-- LANGUAGE SWITCH -->
+<input type="checkbox" id="lang-toggle">
+<label for="lang-toggle" class="lang-switcher">ES / EN</label>
+
+<div class="content">
+
+<!-- HERO -->
+<section class="hero">
+    <h1 class="es">InvestBot‑AI</h1>
+    <h1 class="en">InvestBot‑AI</h1>
+
+    <p class="es">Plataforma de inversión cuantitativa con IA explicable y optimización de carteras.</p>
+    <p class="en">Quantitative investment platform with explainable AI and portfolio optimization.</p>
+
+    <a class="cta-btn" href="https://github.com/luisrodriguezlopez96/InvestBot-AI-public">
+        GitHub
+    </a>
+</section>
+
+<!-- VALUE PROPOSITION -->
+<section class="section">
+    <h2 class="es">🚀 ¿Qué es InvestBot‑AI?</h2>
+    <h2 class="en">🚀 What is InvestBot‑AI?</h2>
+
+    <div class="card">
+        <p class="es">
+            InvestBot‑AI combina <strong>machine learning</strong>, <strong>optimización financiera</strong> 
+            y <strong>explicabilidad avanzada</strong> para construir carteras robustas capaces de adaptarse 
+            a mercados volátiles.
+        </p>
+
+        <p class="en">
+            InvestBot‑AI combines <strong>machine learning</strong>, <strong>financial optimization</strong>, 
+            and <strong>advanced explainability</strong> to build robust portfolios that adapt to volatile markets.
+        </p>
+    </div>
+</section>
+
+<!-- RESULTS -->
+<section class="section">
+    <h2 class="es">📊 Resultados del Backtesting</h2>
+    <h2 class="en">📊 Backtesting Results</h2>
+
+    <div class="card">
+        <p class="es">Periodo analizado: <strong>2022–2025</strong></p>
+        <p class="en">Period analyzed: <strong>2022–2025</strong></p>
+
+        <table>
+            <tr>
+                <th class="es">Estrategia</th>
+                <th class="en">Strategy</th>
+
+                <th>Retorno / Return</th>
+                <th>Sharpe</th>
+            </tr>
+            <tr>
+                <td>Buy & Hold</td>
+                <td>-27.9%</td>
+                <td>-0.918</td>
+            </tr>
+            <tr>
+                <td>Markowitz</td>
+                <td>-34.7%</td>
+                <td>-1.164</td>
+            </tr>
+            <tr style="font-weight: 700; background: #e8f5e9;">
+                <td>InvestBot‑AI</td>
+                <td>+13.3%</td>
+                <td>+0.387</td>
+            </tr>
+        </table>
+
+        <p class="es">✔️ Preserva capital · ✔️ Reduce drawdowns · ✔️ Mantiene liquidez</p>
+        <p class="en">✔️ Preserves capital · ✔️ Reduces drawdowns · ✔️ Maintains liquidity</p>
+    </div>
+</section>
+
+<!-- FEATURES -->
+<section class="section">
+    <h2 class="es">🧠 Características principales</h2>
+    <h2 class="en">🧠 Key Features</h2>
+
+    <div class="grid-3">
+        <div class="card">
+            <h3 class="es">Modelo híbrido ML + Optimización</h3>
+            <h3 class="en">Hybrid ML + Optimization Model</h3>
+
+            <ul class="es">
+                <li>XGBoost con walk‑forward</li>
+                <li>Señales semanales</li>
+                <li>Optimización PyPortfolioOpt</li>
+                <li>Control de liquidez</li>
+            </ul>
+
+            <ul class="en">
+                <li>XGBoost with walk‑forward</li>
+                <li>Weekly signals</li>
+                <li>PyPortfolioOpt optimization</li>
+                <li>Liquidity control</li>
+            </ul>
+        </div>
+
+        <div class="card">
+            <h3 class="es">Explicabilidad con SHAP</h3>
+            <h3 class="en">Explainability with SHAP</h3>
+
+            <p class="es">Variables clave:</p>
+            <p class="en">Key variables:</p>
+
+            <ul>
+                <li>eurusd_change_5d</li>
+                <li>vix_change_5d</li>
+                <li>rsi_14</li>
+                <li>vol_21d</li>
+            </ul>
+        </div>
+
+        <div class="card">
+            <h3 class="es">Backtesting riguroso</h3>
+            <h3 class="en">Rigorous Backtesting</h3>
+
+            <ul class="es">
+                <li>Sharpe, Sortino, MDD, VaR</li>
+                <li>Comparación con benchmarks</li>
+            </ul>
+
+            <ul class="en">
+                <li>Sharpe, Sortino, MDD, VaR</li>
+                <li>Benchmark comparison</li>
+            </ul>
+        </div>
+    </div>
+</section>
+
+<!-- FAQ -->
+<section class="section">
+    <h2 class="es">❓ Preguntas frecuentes</h2>
+    <h2 class="en">❓ Frequently Asked Questions</h2>
+
+    <div class="faq-item">
+        <h4 class="es">¿Es un sistema de trading automático?</h4>
+        <h4 class="en">Is this an automated trading system?</h4>
+
+        <p class="es">No, es una plataforma de investigación cuantitativa.</p>
+        <p class="en">No, it is a quantitative research platform.</p>
+    </div>
+
+    <div class="faq-item">
+        <h4 class="es">¿Incluye código privado?</h4>
+        <h4 class="en">Does it include private code?</h4>
+
+        <p class="es">No, solo documentación y resultados.</p>
+        <p class="en">No, only documentation and results.</p>
+    </div>
+</section>
+
+<footer>
+    © 2026 InvestBot‑AI
+</footer>
+
+</div>
+</body>
+</html>
