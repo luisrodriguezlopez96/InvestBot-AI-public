@@ -1,898 +1,1751 @@
 <!DOCTYPE html>
 <html lang="es">
 <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>InvestBot‑AI | TFM · Finanzas Cuantitativas & Machine Learning</title>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>InvestBot-AI · TFM en Finanzas Cuantitativas & Machine Learning</title>
+<meta name="description" content="Plataforma de optimización de carteras con Machine Learning Explicable. Trabajo de Fin de Máster — Luis Rodríguez López." />
 
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;700&display=swap" rel="stylesheet">
+<template id="__bundler_thumbnail" data-bg-color="#faf7f2">
+<svg viewBox="0 0 1200 800" xmlns="http://www.w3.org/2000/svg">
+  <rect width="1200" height="800" fill="#faf7f2"/>
+  <g transform="translate(360,260)">
+    <rect x="0" y="0" width="120" height="120" rx="20" fill="#1a1815"/>
+    <text x="60" y="78" font-family="monospace" font-size="46" font-weight="700" fill="#faf7f2" text-anchor="middle">IB</text>
+  </g>
+  <text x="600" y="470" font-family="Georgia, serif" font-size="64" font-weight="500" fill="#1a1815" text-anchor="middle" font-style="italic">InvestBot·AI</text>
+  <text x="600" y="520" font-family="monospace" font-size="20" fill="#8a857d" text-anchor="middle" letter-spacing="4">TFM · 2025/2026</text>
+  <line x1="500" y1="560" x2="700" y2="560" stroke="#1e6b4f" stroke-width="3"/>
+</svg>
+</template>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400;9..144,500;9..144,600;9..144,700&family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet">
 
-    <style>
-        :root {
-            --primary: #0f172a;
-            --primary-light: #1e293b;
-            --accent: #10b981;
-            --accent-hover: #059669;
-            --bg: #f8fafc;
-            --surface: #ffffff;
-            --text: #334155;
-            --muted: #64748b;
-            --border: #e2e8f0;
-            --warning: #f59e0b;
-            --danger: #ef4444;
-        }
+<style>
+:root{
+  --ink: #1a1815;
+  --ink-soft: #4a4641;
+  --ink-mute: #8a857d;
+  --paper: #faf7f2;
+  --paper-2: #f3eee6;
+  --rule: #e6dfd2;
+  --rule-soft: #efe9dd;
+  --card: #ffffff;
+  --accent: #1e6b4f;        /* deep emerald — academic */
+  --accent-soft: #d8ebd9;
+  --accent-ink: #0f3d2c;
+  --warn: #b56500;
+  --danger: #a83232;
+  --danger-soft: #f5e0dc;
+  --serif: "Fraunces", "Iowan Old Style", "Charter", Georgia, serif;
+  --sans: "Inter", -apple-system, system-ui, sans-serif;
+  --mono: "JetBrains Mono", ui-monospace, monospace;
+  --max: 1180px;
+  --pad: clamp(20px, 5vw, 40px);
+}
+*{box-sizing:border-box}
+html{scroll-behavior:smooth}
+body{
+  margin:0;
+  font-family:var(--sans);
+  background:var(--paper);
+  color:var(--ink);
+  line-height:1.6;
+  font-size:16px;
+  -webkit-font-smoothing:antialiased;
+  text-rendering:optimizeLegibility;
+}
+.serif{font-family:var(--serif);font-optical-sizing:auto;}
+.mono{font-family:var(--mono);}
 
-        * { box-sizing: border-box; }
-        html { scroll-behavior: smooth; }
+/* ── NAV ───────────────────────────────────────── */
+nav{
+  position:fixed;top:0;left:0;right:0;z-index:100;
+  background:rgba(250,247,242,0.85);
+  backdrop-filter:blur(12px);
+  -webkit-backdrop-filter:blur(12px);
+  border-bottom:1px solid var(--rule);
+}
+.nav-inner{
+  max-width:var(--max);margin:0 auto;
+  padding:14px var(--pad);
+  display:flex;align-items:center;justify-content:space-between;gap:24px;
+}
+.brand{
+  display:flex;align-items:center;gap:10px;
+  font-family:var(--serif);font-weight:600;font-size:1.15rem;
+  color:var(--ink);text-decoration:none;letter-spacing:-0.01em;
+}
+.brand-mark{
+  width:28px;height:28px;border-radius:6px;
+  background:var(--ink);color:var(--paper);
+  display:grid;place-items:center;
+  font-family:var(--mono);font-weight:700;font-size:0.78rem;
+}
+.menu{display:flex;gap:22px;align-items:center}
+.menu a{
+  color:var(--ink-soft);text-decoration:none;
+  font-size:0.86rem;font-weight:500;
+  transition:color .15s;
+}
+.menu a:hover{color:var(--ink)}
+.nav-tools{display:flex;align-items:center;gap:14px}
+.lang{
+  display:inline-flex;align-items:center;
+  border:1px solid var(--rule);
+  border-radius:999px;
+  padding:3px;
+  font-size:0.74rem;font-weight:600;
+  cursor:pointer;background:var(--paper);
+}
+.lang span{
+  padding:3px 10px;border-radius:999px;
+  color:var(--ink-mute);transition:all .2s;
+  letter-spacing:0.04em;
+}
+.lang span.active{background:var(--ink);color:var(--paper)}
+.hamburger{
+  display:none;flex-direction:column;gap:4px;
+  background:none;border:none;cursor:pointer;padding:6px;
+}
+.hamburger span{
+  display:block;width:22px;height:1.5px;background:var(--ink);transition:.2s;
+}
 
-        body {
-            margin: 0;
-            font-family: "Inter", sans-serif;
-            background-color: var(--bg);
-            color: var(--text);
-            line-height: 1.6;
-        }
+/* ── HERO ──────────────────────────────────────── */
+.hero{
+  padding:140px var(--pad) 80px;
+  max-width:var(--max);margin:0 auto;
+}
+.eyebrow{
+  display:inline-flex;align-items:center;gap:10px;
+  font-family:var(--mono);
+  font-size:0.72rem;font-weight:500;
+  color:var(--ink-mute);
+  letter-spacing:0.18em;text-transform:uppercase;
+  margin-bottom:28px;
+}
+.eyebrow::before{
+  content:"";width:24px;height:1px;background:var(--ink-mute);
+}
+.hero h1{
+  font-family:var(--serif);
+  font-size:clamp(2.6rem, 6vw, 4.8rem);
+  font-weight:500;
+  letter-spacing:-0.025em;
+  line-height:1.0;
+  margin:0 0 28px;
+  color:var(--ink);
+  font-variation-settings:"opsz" 144;
+}
+.hero h1 em{
+  font-style:italic;font-weight:400;color:var(--accent-ink);
+}
+.hero-lede{
+  font-family:var(--serif);
+  font-size:clamp(1.15rem, 1.8vw, 1.4rem);
+  line-height:1.5;
+  font-weight:400;
+  color:var(--ink-soft);
+  max-width:680px;
+  margin:0 0 36px;
+}
+.hero-lede strong{color:var(--ink);font-weight:600}
 
-        /* NAVBAR */
-        nav {
-            position: fixed; top: 0; width: 100%;
-            background: rgba(255, 255, 255, 0.95);
-            backdrop-filter: blur(10px);
-            border-bottom: 1px solid var(--border);
-            padding: 15px 5%; display: flex; justify-content: space-between; align-items: center; z-index: 1000;
-        }
-        nav .logo { font-weight: 800; font-size: 1.3rem; color: var(--primary); }
-        nav .menu { display: flex; gap: 20px; }
-        nav .menu a { text-decoration: none; color: var(--muted); font-weight: 600; font-size: 0.9rem; transition: color 0.3s; }
-        nav .menu a:hover { color: var(--primary); }
+.hero-meta{
+  display:flex;flex-wrap:wrap;gap:8px 22px;
+  align-items:center;
+  padding:14px 0;
+  border-top:1px solid var(--rule);
+  border-bottom:1px solid var(--rule);
+  font-size:0.82rem;
+  color:var(--ink-soft);
+  margin-bottom:48px;
+}
+.hero-meta-item{display:inline-flex;align-items:center;gap:8px;font-family:var(--mono);font-size:0.78rem}
+.hero-meta-item .label{color:var(--ink-mute);text-transform:uppercase;letter-spacing:0.08em;font-size:0.68rem}
+.hero-meta-divider{color:var(--rule)}
 
-        /* LANGUAGE TOGGLE */
-        .lang-toggle {
-            display: flex; align-items: center; gap: 4px;
-            background: #f1f5f9; border: 1px solid var(--border);
-            border-radius: 20px; padding: 4px 6px;
-            font-size: 0.78rem; font-weight: 700; cursor: pointer;
-            flex-shrink: 0;
-        }
-        .lang-toggle span {
-            padding: 3px 8px; border-radius: 14px;
-            color: var(--muted); transition: all 0.2s;
-        }
-        .lang-toggle span.active {
-            background: var(--primary); color: white;
-        }
+/* ── EQUITY CURVE ──────────────────────────────── */
+.equity-card{
+  background:var(--card);
+  border:1px solid var(--rule);
+  border-radius:14px;
+  padding:32px;
+  margin-bottom:48px;
+}
+.equity-head{
+  display:flex;justify-content:space-between;align-items:flex-start;
+  flex-wrap:wrap;gap:20px;margin-bottom:24px;
+}
+.equity-head h3{
+  font-family:var(--serif);font-weight:500;
+  font-size:1.35rem;margin:0 0 4px;letter-spacing:-0.01em;
+}
+.equity-head .caption{font-size:0.84rem;color:var(--ink-mute);margin:0}
+.equity-legend{
+  display:flex;gap:18px;flex-wrap:wrap;
+  font-size:0.78rem;
+}
+.legend-item{display:flex;align-items:center;gap:8px;font-family:var(--mono)}
+.legend-swatch{width:14px;height:3px;border-radius:2px}
+.equity-svg{width:100%;height:auto;display:block}
 
-        /* HERO */
-        .hero { padding: 160px 5% 100px; text-align: center; background: linear-gradient(180deg, #f1f5f9 0%, var(--bg) 100%); }
-        .badges-container { display: flex; justify-content: center; gap: 10px; margin-bottom: 25px; flex-wrap: wrap; }
-        .badge { padding: 6px 14px; font-weight: 700; font-size: 0.85rem; border-radius: 20px; }
-        .badge.tfm { background: rgba(16, 185, 129, 0.15); color: #047857; }
-        .badge.private { background: #fee2e2; color: #b91c1c; border: 1px solid #fca5a5; }
-        .hero h1 { font-size: 3.2rem; margin-bottom: 20px; font-weight: 800; color: var(--primary); line-height: 1.1; letter-spacing: -1px; }
-        .hero p { font-size: 1.15rem; max-width: 800px; margin: 0 auto; color: var(--muted); }
+.equity-stats{
+  display:grid;grid-template-columns:repeat(3,1fr);gap:0;
+  margin-top:24px;border-top:1px solid var(--rule);
+  padding-top:20px;
+}
+.eq-stat{padding:0 8px}
+.eq-stat:not(:last-child){border-right:1px solid var(--rule)}
+.eq-stat .name{
+  font-size:0.72rem;color:var(--ink-mute);
+  font-family:var(--mono);text-transform:uppercase;letter-spacing:0.08em;
+  margin-bottom:6px;
+}
+.eq-stat .val{
+  font-family:var(--serif);font-size:1.6rem;font-weight:500;
+  letter-spacing:-0.02em;line-height:1.1;
+}
+.eq-stat .sub{font-size:0.78rem;color:var(--ink-mute);margin-top:4px}
+.eq-stat.win .val{color:var(--accent-ink)}
+.eq-stat.loss .val{color:var(--danger)}
 
-        /* METRICS BAR */
-        .metrics-bar { display: flex; justify-content: center; gap: 40px; margin-top: 40px; flex-wrap: wrap; }
-        .metric { text-align: center; }
-        .metric-val { font-size: 2.5rem; font-weight: 800; color: var(--accent); line-height: 1; }
-        .metric-label { font-size: 0.9rem; font-weight: 600; color: var(--muted); text-transform: uppercase; letter-spacing: 1px; margin-top: 8px; }
-        .metric-sub { font-size: 0.78rem; color: var(--muted); margin-top: 4px; }
+.cta-row{display:flex;flex-wrap:wrap;gap:12px}
+.btn{
+  display:inline-flex;align-items:center;gap:9px;
+  padding:12px 20px;
+  border-radius:8px;
+  font-weight:600;font-size:0.9rem;
+  text-decoration:none;
+  border:1px solid transparent;
+  transition:transform .15s, box-shadow .15s, background .2s;
+}
+.btn:hover{transform:translateY(-1px)}
+.btn-primary{background:var(--ink);color:var(--paper)}
+.btn-primary:hover{background:#000;box-shadow:0 8px 22px -8px rgba(0,0,0,0.3)}
+.btn-secondary{background:transparent;color:var(--ink);border-color:var(--ink-soft)}
+.btn-secondary:hover{background:var(--ink);color:var(--paper);border-color:var(--ink)}
+.btn svg{width:16px;height:16px;fill:currentColor}
 
-        /* SECTIONS */
-        .section { max-width: 1200px; margin: 80px auto; padding: 0 5%; }
-        .section-header { text-align: center; margin-bottom: 50px; }
-        h2 { font-size: 2.2rem; color: var(--primary); margin-bottom: 10px; font-weight: 800; letter-spacing: -0.5px; }
-        .subtitle { color: var(--muted); font-size: 1.1rem; max-width: 700px; margin: 0 auto; }
+/* ── SECTION SCAFFOLD ──────────────────────────── */
+section.section{
+  max-width:var(--max);margin:0 auto;
+  padding:80px var(--pad);
+  border-top:1px solid var(--rule);
+}
+.section-head{
+  display:grid;grid-template-columns:auto 1fr;gap:32px;
+  margin-bottom:48px;align-items:end;
+}
+.section-num{
+  font-family:var(--mono);font-size:0.78rem;
+  color:var(--ink-mute);
+  letter-spacing:0.08em;
+  border-top:1px solid var(--ink);
+  padding-top:8px;width:80px;
+}
+.section-head h2{
+  font-family:var(--serif);
+  font-weight:500;
+  font-size:clamp(1.8rem, 3.5vw, 2.6rem);
+  letter-spacing:-0.02em;
+  line-height:1.1;
+  margin:0 0 8px;
+  color:var(--ink);
+}
+.section-head .lede{
+  font-size:1.02rem;color:var(--ink-soft);max-width:640px;margin:0;
+}
 
-        .card { background: var(--surface); padding: 35px; border-radius: 16px; box-shadow: 0 4px 20px rgba(0,0,0,0.04); border: 1px solid var(--border); }
-        .grid-2 { display: grid; grid-template-columns: repeat(auto-fit, minmax(450px, 1fr)); gap: 30px; }
-        .grid-3 { display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 30px; }
+h3{
+  font-family:var(--serif);font-weight:500;
+  font-size:1.3rem;letter-spacing:-0.01em;
+  margin:0 0 12px;color:var(--ink);
+}
+h4{
+  font-family:var(--sans);font-weight:600;
+  font-size:0.78rem;letter-spacing:0.1em;text-transform:uppercase;
+  color:var(--ink-mute);margin:0 0 12px;
+}
 
-        .highlight-box { background: #f8fafc; border-left: 4px solid var(--primary); padding: 20px; border-radius: 0 8px 8px 0; margin-bottom: 20px; }
-        .highlight-box.green { border-color: var(--accent); background: #ecfdf5; }
-        .highlight-box.red { border-color: var(--danger); background: #fef2f2; }
+/* ── CARDS & GRIDS ─────────────────────────────── */
+.grid-2{display:grid;grid-template-columns:repeat(auto-fit,minmax(380px,1fr));gap:28px}
+.grid-3{display:grid;grid-template-columns:repeat(auto-fit,minmax(280px,1fr));gap:24px}
+.grid-4{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:20px}
 
-        .table-container { overflow-x: auto; }
-        table { width: 100%; border-collapse: collapse; margin-top: 10px; background: white; border-radius: 12px; overflow: hidden; border: 1px solid var(--border); }
-        table th, table td { padding: 16px; border-bottom: 1px solid var(--border); text-align: left; }
-        table th { background: #f1f5f9; color: var(--primary); font-weight: 600; }
-        .highlight-row { font-weight: 700; background: #ecfdf5; border-left: 4px solid var(--accent); }
-        .table-note { font-size: 0.8rem; color: var(--muted); margin-top: 10px; padding: 0 4px; }
+.card{
+  background:var(--card);
+  border:1px solid var(--rule);
+  border-radius:12px;
+  padding:28px;
+}
+.card.flat{background:transparent;border-color:var(--rule)}
 
-        /* CODE BLOCK & DATA SOURCES */
-        .code-block { background: #1e293b; color: #e2e8f0; font-family: 'JetBrains Mono', monospace; padding: 25px; border-radius: 12px; font-size: 0.9rem; line-height: 1.6; overflow-x: auto; white-space: pre; }
-        .code-comment { color: #94a3b8; }
-        .code-folder { color: #60a5fa; font-weight: 700; }
-        .code-file { color: #34d399; }
-        .sources-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 16px; margin-top: 30px; }
-        .source-card { background: var(--surface); border: 1px solid var(--border); border-radius: 12px; padding: 20px; }
-        .source-num { font-size: 0.7rem; font-weight: 800; text-transform: uppercase; letter-spacing: 1.5px; color: var(--muted); margin-bottom: 6px; }
-        .source-name { font-weight: 700; color: var(--primary); margin-bottom: 6px; font-size: 1rem; }
-        .source-desc { font-size: 0.85rem; color: var(--muted); line-height: 1.5; }
+/* Results table */
+.results-table{
+  width:100%;border-collapse:collapse;
+  background:var(--card);border:1px solid var(--rule);border-radius:12px;
+  overflow:hidden;
+}
+.results-table th, .results-table td{
+  padding:16px 18px;text-align:left;
+  border-bottom:1px solid var(--rule-soft);
+  font-size:0.94rem;
+}
+.results-table th{
+  background:var(--paper-2);
+  font-family:var(--mono);font-weight:500;
+  font-size:0.74rem;text-transform:uppercase;letter-spacing:0.08em;
+  color:var(--ink-mute);
+}
+.results-table tr:last-child td{border-bottom:none}
+.results-table .num{font-family:var(--mono);font-variant-numeric:tabular-nums}
+.results-table .row-win{background:var(--accent-soft);}
+.results-table .row-win td{font-weight:600;color:var(--accent-ink)}
+.delta-loss{color:var(--danger);font-weight:600;font-family:var(--mono)}
+.delta-win{color:var(--accent-ink);font-weight:600;font-family:var(--mono)}
 
-        /* CHATBOT & GALLERY */
-        .chat-mock { background: #1e293b; border-radius: 12px; overflow: hidden; font-family: 'JetBrains Mono', monospace; font-size: 0.82rem; }
-        .chat-mock-header { background: #0f172a; padding: 10px 16px; display: flex; align-items: center; gap: 8px; }
-        .chat-mock-header .dot { width: 10px; height: 10px; border-radius: 50%; } .chat-mock-header .dot-red { background: #ef4444; } .chat-mock-header .dot-yellow { background: #f59e0b; } .chat-mock-header .dot-green { background: #10b981; }
-        .chat-mock-header .title { color: #94a3b8; font-size: 0.78rem; margin-left: 6px; }
-        .chat-mock-body { padding: 20px; display: flex; flex-direction: column; gap: 14px; }
-        .chat-msg { display: flex; flex-direction: column; gap: 4px; }
-        .chat-msg .label { font-size: 0.7rem; font-weight: 700; text-transform: uppercase; letter-spacing: 1px; }
-        .chat-msg.user .label { color: #60a5fa; } .chat-msg.bot .label { color: #34d399; }
-        .chat-msg .bubble { padding: 10px 14px; border-radius: 8px; line-height: 1.55; }
-        .chat-msg.user .bubble { background: rgba(96,165,250,0.1); color: #e2e8f0; border: 1px solid rgba(96,165,250,0.2); }
-        .chat-msg.bot .bubble { background: rgba(52,211,153,0.08); color: #e2e8f0; border: 1px solid rgba(52,211,153,0.15); }
-        .gallery-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(350px, 1fr)); gap: 30px; }
-        .img-wrapper { background: #e2e8f0; border-radius: 12px; overflow: hidden; border: 1px solid var(--border); aspect-ratio: 16/9; display: flex; align-items: center; justify-content: center; position: relative; }
-        .img-wrapper img { width: 100%; height: 100%; object-fit: cover; position: relative; z-index: 1; }
-        .img-wrapper::before { content: '📸 Imagen no disponible'; position: absolute; color: var(--muted); font-size: 0.9rem; z-index: 0; }
-        .placeholder-card { background: var(--surface); border: 2px dashed var(--border); border-radius: 12px; aspect-ratio: 16/9; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 10px; padding: 30px; text-align: center; }
-        .placeholder-icon { font-size: 2.5rem; }
-        .placeholder-title { font-weight: 700; color: var(--primary); font-size: 1rem; }
-        .placeholder-desc { font-size: 0.85rem; color: var(--muted); max-width: 280px; line-height: 1.5; }
-        .placeholder-badge { background: #f1f5f9; color: var(--muted); font-size: 0.75rem; font-weight: 600; padding: 4px 12px; border-radius: 20px; border: 1px solid var(--border); }
+/* Universe section */
+.universe-flow{
+  list-style:none;padding:0;margin:0;
+  display:flex;flex-direction:column;gap:14px;
+}
+.universe-flow li{
+  display:flex;gap:14px;align-items:flex-start;
+  font-size:0.93rem;line-height:1.55;color:var(--ink-soft);
+}
+.universe-flow li strong{color:var(--ink);font-weight:600;}
+.uflow-num{
+  flex:0 0 28px;height:28px;border-radius:50%;
+  background:var(--accent);color:var(--paper);
+  display:flex;align-items:center;justify-content:center;
+  font-family:var(--mono);font-size:0.78rem;font-weight:700;
+  margin-top:1px;
+}
+.universe-table{
+  width:100%;border-collapse:collapse;
+  background:var(--card);border:1px solid var(--rule);border-radius:12px;
+  overflow:hidden;font-size:0.9rem;
+}
+.universe-table th,.universe-table td{
+  padding:11px 14px;text-align:left;
+  border-bottom:1px solid var(--rule-soft);
+}
+.universe-table th{
+  background:var(--paper-2);
+  font-family:var(--mono);font-weight:500;
+  font-size:0.7rem;letter-spacing:0.08em;text-transform:uppercase;
+  color:var(--ink-mute);
+}
+.universe-table tr:last-child td{border-bottom:none}
+.universe-table td.mono{font-family:var(--mono);font-size:0.85rem;color:var(--accent-ink);font-weight:600;}
+.region-tag{
+  display:inline-block;padding:2px 9px;border-radius:999px;
+  background:var(--paper-2);border:1px solid var(--rule);
+  font-family:var(--mono);font-size:0.72rem;color:var(--ink-soft);
+}
 
-        /* FOOTER & CTA */
-        footer { padding: 60px 20px; background: var(--primary); color: white; text-align: center; margin-top: 100px; }
-        .cta-group { display: flex; justify-content: center; gap: 15px; margin-top: 40px; flex-wrap: wrap; }
-        .btn { display: inline-flex; align-items: center; gap: 8px; padding: 13px 28px; border-radius: 10px; font-weight: 700; font-size: 0.95rem; text-decoration: none; transition: all 0.2s; }
-        .btn-linkedin { background: #0a66c2; color: white; } .btn-linkedin:hover { background: #004182; transform: translateY(-2px); box-shadow: 0 6px 20px rgba(10,102,194,0.35); }
-        .btn-github { background: var(--primary); color: white; } .btn-github:hover { background: #0f1f36; transform: translateY(-2px); box-shadow: 0 6px 20px rgba(15,23,42,0.35); }
-        .btn svg { width: 20px; height: 20px; fill: currentColor; flex-shrink: 0; }
+/* Weekly cadence timeline */
+.weekly-cadence{
+  margin-top:32px;padding:24px;
+  background:var(--paper-2);border:1px solid var(--rule);border-radius:14px;
+}
+.cadence-label{
+  font-family:var(--mono);font-size:0.72rem;letter-spacing:0.08em;
+  color:var(--ink-mute);text-transform:uppercase;margin-bottom:18px;
+}
+.cadence-track{
+  display:grid;grid-template-columns:repeat(5,1fr);gap:0;
+  position:relative;
+}
+.cadence-track::before{
+  content:"";position:absolute;top:13px;left:5%;right:5%;
+  height:1px;background:var(--rule);z-index:0;
+}
+.cadence-step{
+  position:relative;z-index:1;text-align:center;padding:0 8px;
+}
+.cadence-dot{
+  width:26px;height:26px;border-radius:50%;
+  background:var(--paper);border:2px solid var(--accent);
+  margin:0 auto 12px;display:flex;align-items:center;justify-content:center;
+  font-family:var(--mono);font-size:0.72rem;font-weight:700;color:var(--accent-ink);
+}
+.cadence-step:last-child .cadence-dot{
+  background:var(--accent);color:var(--paper);
+}
+.cadence-day{
+  font-family:var(--mono);font-size:0.72rem;letter-spacing:0.06em;
+  color:var(--ink-mute);text-transform:uppercase;margin-bottom:4px;
+}
+.cadence-task{font-size:0.86rem;color:var(--ink);font-weight:500;line-height:1.35;}
+@media (max-width: 720px){
+  .cadence-track{grid-template-columns:1fr;gap:14px;}
+  .cadence-track::before{display:none;}
+  .cadence-step{display:flex;gap:14px;text-align:left;align-items:center;padding:0;}
+  .cadence-dot{margin:0;flex-shrink:0;}
+  .cadence-day{margin:0;display:inline-block;margin-right:8px;}
+  .cadence-task{display:inline;}
+}
 
-        /* TECH PILLS */
-        .tech-pills { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 20px; }
-        .pill { padding: 5px 14px; border-radius: 20px; font-size: 0.8rem; font-weight: 700; border: 1px solid; }
-        .pill-green { background: #ecfdf5; color: #047857; border-color: #6ee7b7; }
-        .pill-blue { background: #eff6ff; color: #1d4ed8; border-color: #93c5fd; }
-        .pill-slate { background: #f1f5f9; color: #475569; border-color: #cbd5e1; }
-        .pill-purple { background: #f5f3ff; color: #6d28d9; border-color: #c4b5fd; }
+/* Callouts */
+.callout{
+  border-left:3px solid var(--ink);
+  padding:16px 20px;
+  background:var(--paper-2);
+  border-radius:0 8px 8px 0;
+  font-size:0.95rem;
+}
+.callout.green{border-color:var(--accent);background:var(--accent-soft)}
+.callout.red{border-color:var(--danger);background:var(--danger-soft)}
+.callout.warn{border-color:var(--warn);background:#fbf0dc}
 
-        /* AUTHOR SECTION */
-        .author-section {
-            background: var(--surface);
-            border-radius: 16px;
-            display: grid;
-            grid-template-columns: 150px 1fr;
-            gap: 35px;
-            padding: 40px;
-            align-items: center;
-            border: 1px solid var(--border);
-            box-shadow: 0 4px 20px rgba(0,0,0,0.04);
-        }
-        .author-img {
-            width: 150px;
-            height: 150px;
-            border-radius: 50%;
-            object-fit: cover;
-            box-shadow: 0 0 0 8px white, 0 0 0 9px var(--border);
-        }
-        .author-text h3 { margin: 0 0 10px 0; }
-        .author-text p { margin: 0; color: var(--muted); }
+/* ── HOW IT WORKS ──────────────────────────────── */
+.flow{
+  display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));
+  gap:0;
+  border:1px solid var(--rule);
+  border-radius:12px;overflow:hidden;background:var(--card);
+}
+.flow-step{
+  padding:28px 24px;
+  position:relative;
+  border-right:1px solid var(--rule);
+}
+.flow-step:last-child{border-right:none}
+@media(max-width:900px){
+  .flow-step{border-right:none;border-bottom:1px solid var(--rule)}
+  .flow-step:last-child{border-bottom:none}
+}
+.flow-step .num{
+  font-family:var(--mono);font-size:0.72rem;
+  color:var(--ink-mute);letter-spacing:0.1em;
+  margin-bottom:14px;
+  display:flex;align-items:center;gap:10px;
+}
+.flow-step .num::after{
+  content:"";flex:1;height:1px;background:var(--rule);
+}
+.flow-step h4{
+  font-family:var(--serif);font-size:1.1rem;font-weight:500;
+  text-transform:none;letter-spacing:-0.01em;color:var(--ink);
+  margin-bottom:10px;
+}
+.flow-step p{
+  font-size:0.88rem;color:var(--ink-soft);margin:0;line-height:1.55;
+}
 
-        /* HAMBURGER & MOBILE */
-        .hamburger { display: none; flex-direction: column; gap: 5px; cursor: pointer; padding: 5px; background: none; border: none; }
-        .hamburger span { display: block; width: 24px; height: 2px; background: var(--primary); border-radius: 2px; transition: all 0.3s; }
-        @media (max-width: 600px) {
-            .author-section { grid-template-columns: 1fr; text-align: center; }
-            .author-img { margin: 0 auto 20px; }
-        }
-        @media (max-width: 768px) {
-            .hamburger { display: flex; }
-            nav .menu { display: none; flex-direction: column; position: absolute; top: 100%; left: 0; width: 100%; background: white; border-bottom: 1px solid var(--border); padding: 20px 5%; gap: 15px; box-shadow: 0 8px 20px rgba(0,0,0,0.08); }
-            nav .menu.open { display: flex; }
-            .hero h1 { font-size: 2.2rem; }
-            .metrics-bar { flex-direction: column; gap: 20px; }
-            .gallery-grid > .card { grid-column: 1 / -1; grid-template-columns: 1fr !important; }
-        }
-    </style>
+/* ── ARCHITECTURE ──────────────────────────────── */
+.code-block{
+  background:#1a1815;
+  color:#e8e1d4;
+  font-family:var(--mono);
+  font-size:0.84rem;
+  padding:24px;
+  border-radius:12px;
+  line-height:1.7;
+  overflow-x:auto;
+  white-space:pre;
+  border:1px solid var(--ink);
+}
+.code-block .c-comment{color:#8a857d}
+.code-block .c-folder{color:#9eb59a}
+.code-block .c-file{color:#d9b878}
+
+.tech-pills{display:flex;flex-wrap:wrap;gap:6px;margin-top:18px}
+.pill{
+  font-family:var(--mono);
+  font-size:0.72rem;font-weight:500;
+  padding:4px 10px;border-radius:4px;
+  border:1px solid var(--rule);
+  color:var(--ink-soft);background:var(--paper);
+}
+.pill.dark{background:var(--ink);color:var(--paper);border-color:var(--ink)}
+
+.sources{
+  display:grid;grid-template-columns:repeat(auto-fit,minmax(240px,1fr));
+  gap:0;margin-top:32px;
+  border:1px solid var(--rule);border-radius:12px;overflow:hidden;background:var(--card);
+}
+.source{
+  padding:22px 24px;
+  border-right:1px solid var(--rule);
+}
+.source:last-child{border-right:none}
+@media(max-width:900px){
+  .source{border-right:none;border-bottom:1px solid var(--rule)}
+  .source:last-child{border-bottom:none}
+}
+.source .src-num{
+  font-family:var(--mono);font-size:0.7rem;
+  color:var(--ink-mute);letter-spacing:0.12em;margin-bottom:8px;
+}
+.source .src-name{
+  font-family:var(--serif);font-weight:500;font-size:1.1rem;
+  margin-bottom:6px;letter-spacing:-0.01em;
+}
+.source .src-desc{font-size:0.85rem;color:var(--ink-soft);margin:0;line-height:1.55}
+
+/* ── XAI / SHAP ────────────────────────────────── */
+.shap-list{display:flex;flex-direction:column;gap:14px;margin-top:8px}
+.shap-row{display:grid;grid-template-columns:1fr;gap:6px}
+.shap-meta{
+  display:flex;justify-content:space-between;
+  font-size:0.84rem;font-weight:500;
+}
+.shap-meta .rank{font-family:var(--mono);color:var(--ink-mute);font-size:0.78rem}
+.shap-bar{height:6px;background:var(--rule-soft);border-radius:3px;overflow:hidden}
+.shap-fill{height:100%;background:var(--accent);border-radius:3px}
+.shap-fill.muted{background:var(--ink-mute)}
+
+/* ── CHATBOT MOCK ──────────────────────────────── */
+.chat-mock{
+  background:#1a1815;border-radius:12px;overflow:hidden;
+  font-family:var(--mono);font-size:0.8rem;
+  border:1px solid var(--ink);
+}
+.chat-head{
+  background:#0f0d0a;padding:10px 14px;
+  display:flex;align-items:center;gap:8px;
+  border-bottom:1px solid #2a2622;
+}
+.chat-head .dot{width:9px;height:9px;border-radius:50%}
+.chat-head .dot.r{background:#c84a3b}
+.chat-head .dot.y{background:#d4a44d}
+.chat-head .dot.g{background:#5a9a6f}
+.chat-head .title{color:#8a857d;font-size:0.74rem;margin-left:8px}
+.chat-body{padding:18px;display:flex;flex-direction:column;gap:14px}
+.chat-msg{display:flex;flex-direction:column;gap:5px}
+.chat-msg .lbl{
+  font-size:0.66rem;font-weight:600;
+  letter-spacing:0.12em;text-transform:uppercase;
+}
+.chat-msg.user .lbl{color:#9eb5d4}
+.chat-msg.bot .lbl{color:#9eb59a}
+.chat-msg .bub{
+  padding:10px 13px;border-radius:8px;line-height:1.55;color:#e8e1d4;
+}
+.chat-msg.user .bub{background:rgba(158,181,212,0.08);border:1px solid rgba(158,181,212,0.2)}
+.chat-msg.bot .bub{background:rgba(158,181,154,0.08);border:1px solid rgba(158,181,154,0.2)}
+
+/* ── REPORT ────────────────────────────────────── */
+.report-illu{
+  aspect-ratio: 4/3;
+  background:var(--card);
+  border:1px solid var(--rule);
+  border-radius:12px;
+  padding:32px;
+  display:flex;flex-direction:column;gap:14px;
+  position:relative;overflow:hidden;
+}
+.report-illu::before{
+  content:"WEEKLY REPORT · WK 17/2026";
+  position:absolute;top:16px;right:16px;
+  font-family:var(--mono);font-size:0.66rem;
+  color:var(--ink-mute);letter-spacing:0.1em;
+}
+.report-row{
+  height:6px;border-radius:3px;background:var(--rule-soft);
+}
+.report-row.short{width:60%}
+.report-row.mid{width:80%}
+.report-row.dark{background:var(--ink);height:10px;width:40%}
+.report-chart{
+  flex:1;background:var(--paper-2);border-radius:6px;margin-top:8px;
+  display:flex;align-items:flex-end;gap:6px;padding:12px;
+}
+.report-bar{flex:1;background:var(--accent);border-radius:2px 2px 0 0}
+.report-bar.muted{background:var(--ink-mute)}
+
+/* ── GALLERY ───────────────────────────────────── */
+.gallery{display:grid;grid-template-columns:repeat(auto-fit,minmax(280px,1fr));gap:20px}
+.shot{
+  background:var(--card);border:1px solid var(--rule);border-radius:10px;
+  aspect-ratio:16/10;display:flex;flex-direction:column;
+  overflow:hidden;position:relative;
+}
+.shot-bar{
+  height:24px;background:var(--paper-2);border-bottom:1px solid var(--rule);
+  display:flex;align-items:center;gap:5px;padding:0 10px;
+}
+.shot-bar .d{width:7px;height:7px;border-radius:50%;background:var(--rule)}
+.shot-body{flex:1;padding:18px;display:flex;flex-direction:column;justify-content:space-between}
+.shot-body .title{
+  font-family:var(--serif);font-size:0.95rem;color:var(--ink);font-weight:500;
+}
+.shot-body .meta{font-family:var(--mono);font-size:0.7rem;color:var(--ink-mute);letter-spacing:0.08em}
+.shot-graph{
+  height:50%;display:flex;align-items:flex-end;gap:3px;
+}
+.shot-graph .b{flex:1;background:var(--ink);border-radius:1px 1px 0 0;opacity:0.15}
+.shot-graph .b.hl{background:var(--accent);opacity:1}
+
+/* ── FAQ ───────────────────────────────────────── */
+.faq{display:flex;flex-direction:column;border-top:1px solid var(--rule)}
+.faq-item{
+  border-bottom:1px solid var(--rule);
+  padding:22px 0;
+}
+.faq-item summary{
+  cursor:pointer;list-style:none;
+  font-family:var(--serif);font-weight:500;font-size:1.1rem;
+  color:var(--ink);
+  display:flex;justify-content:space-between;align-items:center;gap:16px;
+  letter-spacing:-0.005em;
+}
+.faq-item summary::-webkit-details-marker{display:none}
+.faq-item summary::after{
+  content:"+";font-family:var(--mono);font-size:1.4rem;color:var(--ink-mute);
+  transition:transform .2s;
+}
+.faq-item[open] summary::after{transform:rotate(45deg)}
+.faq-item .answer{
+  margin-top:14px;color:var(--ink-soft);font-size:0.95rem;line-height:1.6;
+}
+
+/* ── AUTHOR ────────────────────────────────────── */
+.author{
+  display:grid;grid-template-columns:160px 1fr;gap:36px;align-items:start;
+  background:var(--card);border:1px solid var(--rule);border-radius:12px;
+  padding:36px;
+}
+.author-img{
+  width:160px;height:160px;border-radius:50%;
+  object-fit:cover;
+  border:1px solid var(--rule);
+}
+.author-text p{
+  font-family:var(--serif);font-size:1.05rem;color:var(--ink-soft);
+  line-height:1.65;margin:0 0 14px;
+}
+.author-text p strong{color:var(--ink);font-weight:600}
+@media(max-width:640px){
+  .author{grid-template-columns:1fr;text-align:center;padding:28px}
+  .author-img{margin:0 auto}
+}
+
+/* ── FOOTER ────────────────────────────────────── */
+footer{
+  background:var(--ink);color:var(--paper);
+  padding:80px var(--pad) 60px;margin-top:80px;
+}
+.footer-inner{max-width:var(--max);margin:0 auto}
+.footer-top{
+  display:grid;grid-template-columns:2fr 1fr;gap:48px;
+  padding-bottom:48px;border-bottom:1px solid rgba(255,255,255,0.08);
+}
+@media(max-width:700px){.footer-top{grid-template-columns:1fr}}
+.footer-top h3{
+  font-family:var(--serif);color:var(--paper);
+  font-size:2rem;font-weight:500;margin:0 0 12px;letter-spacing:-0.02em;
+}
+.footer-top p{color:#a8a39a;margin:0 0 20px;max-width:540px}
+.footer-disclaimer{
+  margin-top:32px;
+  font-size:0.78rem;color:#8a857d;line-height:1.6;
+}
+.footer-disclaimer p{margin:0 0 8px}
+.footer-disclaimer strong{color:#c8c2b6}
+.footer-bottom{
+  display:flex;justify-content:space-between;align-items:center;
+  padding-top:24px;font-size:0.78rem;color:#8a857d;
+  font-family:var(--mono);
+  flex-wrap:wrap;gap:12px;
+}
+
+.btn-dark-primary{background:var(--paper);color:var(--ink)}
+.btn-dark-primary:hover{background:#fff}
+.btn-dark-secondary{background:transparent;color:var(--paper);border-color:rgba(255,255,255,0.3)}
+.btn-dark-secondary:hover{background:var(--paper);color:var(--ink)}
+
+/* ── MOBILE ────────────────────────────────────── */
+@media(max-width:860px){
+  .menu{display:none;flex-direction:column;
+    position:absolute;top:100%;left:0;right:0;
+    background:var(--paper);border-bottom:1px solid var(--rule);
+    padding:20px var(--pad);gap:16px;}
+  .menu.open{display:flex}
+  .hamburger{display:flex}
+  .section-head{grid-template-columns:1fr;gap:16px}
+  .section-num{width:auto}
+  .equity-stats{grid-template-columns:1fr}
+  .eq-stat{padding:12px 0;border-right:none !important;border-bottom:1px solid var(--rule)}
+  .eq-stat:last-child{border-bottom:none}
+  .grid-2{grid-template-columns:1fr}
+}
+</style>
 </head>
 <body>
 
+<!-- ════════ NAV ════════ -->
 <nav>
-    <div class="logo">🤖 InvestBot‑AI</div>
-    <div class="menu" id="nav-menu">
-        <a href="#resultados" data-i18n="nav.results">Resultados</a>
-        <a href="#arquitectura" data-i18n="nav.architecture">Arquitectura</a>
-        <a href="#rigor" data-i18n="nav.rigor">Rigor</a>
-        <a href="#xai" data-i18n="nav.xai">XAI & SHAP</a>
-        <a href="#chatbot" data-i18n="nav.chatbot">Asistente IA</a>
-        <a href="#informe" data-i18n="nav.report">Informe</a>
-        <a href="#galeria" data-i18n="nav.ui">UI</a>
-        <a href="#autor" data-i18n="nav.author">Sobre el Autor</a>
+  <div class="nav-inner">
+    <a class="brand" href="#top">
+      <span class="brand-mark">IB</span>
+      <span>InvestBot<span style="color:var(--ink-mute);font-weight:400">·AI</span></span>
+    </a>
+    <div class="menu" id="menu">
+      <a href="#results" data-i18n="nav.results">Resultados</a>
+      <a href="#how" data-i18n="nav.how">Cómo funciona</a>
+      <a href="#architecture" data-i18n="nav.architecture">Arquitectura</a>
+      <a href="#rigor" data-i18n="nav.rigor">Rigor</a>
+      <a href="#xai" data-i18n="nav.xai">XAI</a>
+      <a href="#assistant" data-i18n="nav.assistant">Asistente</a>
+      <a href="#faq" data-i18n="nav.faq">FAQ</a>
     </div>
-    <div style="display:flex;align-items:center;gap:12px;">
-        <div class="lang-toggle" id="lang-toggle" title="Switch language">
-            <span id="lang-es" class="active">ES</span>
-            <span id="lang-en">EN</span>
-        </div>
-        <button class="hamburger" id="hamburger" aria-label="Abrir menú" aria-expanded="false"><span></span><span></span><span></span></button>
+    <div class="nav-tools">
+      <div class="lang" id="lang">
+        <span id="lang-es" class="active">ES</span>
+        <span id="lang-en">EN</span>
+      </div>
+      <button class="hamburger" id="hamburger" aria-label="menu"><span></span><span></span><span></span></button>
     </div>
+  </div>
 </nav>
 
-<!-- HERO -->
-<section class="hero">
-    <div class="badges-container">
-        <div class="badge tfm" data-i18n="hero.badge.tfm">🎓 Trabajo de Fin de Máster 2025/2026</div>
-        <div class="badge private" data-i18n="hero.badge.private">🔒 Repositorio Privado (Código Confidencial)</div>
-    </div>
-    <h1>InvestBot AI</h1>
-    <p style="font-size: 1.4rem; font-weight: 600; color: var(--primary); margin-top: -10px; margin-bottom: 20px;" data-i18n="hero.tagline">Optimización de Carteras con ML Explicable</p>
-    <p data-i18n-html="hero.description">Una plataforma que recopila datos de mercado en tiempo real, los analiza con modelos de Machine Learning y te indica <strong>cuándo invertir, en qué ETFs y cuánto peso darle a cada uno</strong> — todo explicado en lenguaje natural por un asistente IA.</p>
+<!-- ════════ HERO ════════ -->
+<section class="hero" id="top">
+  <div class="eyebrow" data-i18n="hero.eyebrow">TFM · Máster en Big Data & Data Science · 2025/2026</div>
+  <h1 data-i18n-html="hero.title">InvestBot-AI<br><em>Optimización de carteras</em><br>con ML explicable.</h1>
+  <p class="hero-lede" data-i18n-html="hero.lede">Una plataforma que recopila datos de mercado en tiempo real, los analiza con modelos de Machine Learning y decide <strong>cuándo invertir, en qué ETFs y en qué proporción</strong> — todo explicado en lenguaje natural por un asistente IA que se ejecuta localmente.</p>
 
-    <div class="metrics-bar">
-        <div class="metric">
-            <div class="metric-val">+4.201€</div>
-            <div class="metric-label" data-i18n="metric.alpha.label">Alpha sobre el mercado</div>
-            <div class="metric-sub" data-i18n="metric.alpha.sub">Capital adicional vs. B&H</div>
-        </div>
-        <div class="metric">
-            <div class="metric-val">57.1%</div>
-            <div class="metric-label" data-i18n="metric.accuracy.label">Acierto Direccional</div>
-            <div class="metric-sub" data-i18n="metric.accuracy.sub">6 de cada 10 predicciones correctas</div>
-        </div>
-        <div class="metric">
-            <div class="metric-val">+2.1%</div>
-            <div class="metric-label" data-i18n="metric.gain.label">Ganancia real</div>
-            <div class="metric-sub" data-i18n="metric.gain.sub">vs. -19.2% del mercado</div>
-        </div>
+  <div class="hero-meta">
+    <span class="hero-meta-item"><span class="label" data-i18n="hero.meta.author">Autor</span> Luis Rodríguez López</span>
+    <span class="hero-meta-divider">·</span>
+    <span class="hero-meta-item"><span class="label" data-i18n="hero.meta.period">Período</span> 2025 – 2026</span>
+    <span class="hero-meta-divider">·</span>
+    <span class="hero-meta-item"><span class="label" data-i18n="hero.meta.stack">Stack</span> Python · XGBoost · SHAP · Ollama</span>
+    <span class="hero-meta-divider">·</span>
+    <span class="hero-meta-item"><span class="label" data-i18n="hero.meta.repo">Repositorio</span> <span data-i18n="hero.meta.repostate">Privado · Confidencial</span></span>
+  </div>
+
+  <!-- Equity curve -->
+  <div class="equity-card">
+    <div class="equity-head">
+      <div>
+        <h3 data-i18n="equity.title">Backtest realista · Dic 2023 → Dic 2025</h3>
+        <p class="caption" data-i18n="equity.caption">10.000 € iniciales + 100 €/sem (DCA) · comisiones 0.1 % · cap 40 % por ETF</p>
+      </div>
+      <div class="equity-legend">
+        <div class="legend-item"><span class="legend-swatch" style="background:#1e6b4f"></span>InvestBot AI</div>
+        <div class="legend-item"><span class="legend-swatch" style="background:#8a857d"></span>Markowitz</div>
+        <div class="legend-item"><span class="legend-swatch" style="background:#c8b8a0"></span>Buy &amp; Hold</div>
+      </div>
     </div>
-    <div class="cta-group">
-        <a href="https://www.linkedin.com/in/luisrodriguezlopez96/" target="_blank" rel="noopener" class="btn btn-linkedin"><svg viewBox="0 0 24 24"><path d="M20.447 20.452h-3.554v-5.569c0-1.328-.027-3.037-1.852-3.037-1.853 0-2.136 1.445-2.136 2.939v5.667H9.351V9h3.414v1.561h.046c.477-.9 1.637-1.85 3.37-1.85 3.601 0 4.267 2.37 4.267 5.455v6.286zM5.337 7.433a2.062 2.062 0 01-2.063-2.065 2.064 2.064 0 112.063 2.065zm1.782 13.019H3.555V9h3.564v11.452zM22.225 0H1.771C.792 0 0 .774 0 1.729v20.542C0 23.227.792 24 1.771 24h20.451C23.2 24 24 23.227 24 22.271V1.729C24 .774 23.2 0 22.222 0h.003z"/></svg><span data-i18n="hero.btn.linkedin">LinkedIn</span></a>
-        <a href="https://github.com/luisrodriguezlopez96/InvestBot-AI-public" target="_blank" rel="noopener" class="btn btn-github"><svg viewBox="0 0 24 24"><path d="M12 .297c-6.63 0-12 5.373-12 12 0 5.303 3.438 9.8 8.205 11.385.6.113.82-.258.82-.577 0-.285-.01-1.04-.015-2.04-3.338.724-4.042-1.61-4.042-1.61C4.422 18.07 3.633 17.7 3.633 17.7c-1.087-.744.084-.729.084-.729 1.205.084 1.838 1.236 1.838 1.236 1.07 1.835 2.809 1.305 3.495.998.108-.776.417-1.305.76-1.605-2.665-.3-5.466-1.332-5.466-5.93 0-1.31.465-2.38 1.235-3.22-.135-.303-.54-1.523.105-3.176 0 0 1.005-.322 3.3 1.23.96-.267 1.98-.399 3-.405 1.02.006 2.04.138 3 .405 2.28-1.552 3.285-1.23 3.285-1.23.645 1.653.24 2.873.12 3.176.765.84 1.23 1.91 1.23 3.22 0 4.61-2.805 5.625-5.475 5.92.42.36.81 1.096.81 2.22 0 1.606-.015 2.896-.015 3.286 0 .315.21.69.825.57C20.565 22.092 24 17.592 24 12.297c0-6.627-5.373-12-12-12"/></svg><span data-i18n="hero.btn.github">Repositorio Público</span></a>
+
+    <svg class="equity-svg" viewBox="0 0 800 320" preserveAspectRatio="none" aria-hidden="true">
+      <!-- grid -->
+      <g stroke="#efe9dd" stroke-width="1">
+        <line x1="40" y1="40" x2="780" y2="40"/>
+        <line x1="40" y1="100" x2="780" y2="100"/>
+        <line x1="40" y1="160" x2="780" y2="160"/>
+        <line x1="40" y1="220" x2="780" y2="220"/>
+        <line x1="40" y1="280" x2="780" y2="280"/>
+      </g>
+      <!-- y axis labels -->
+      <g font-family="JetBrains Mono, monospace" font-size="10" fill="#8a857d">
+        <text x="34" y="44" text-anchor="end">22 k€</text>
+        <text x="34" y="104" text-anchor="end">19 k€</text>
+        <text x="34" y="164" text-anchor="end">16 k€</text>
+        <text x="34" y="224" text-anchor="end">13 k€</text>
+        <text x="34" y="284" text-anchor="end">10 k€</text>
+      </g>
+      <!-- x axis labels -->
+      <g font-family="JetBrains Mono, monospace" font-size="10" fill="#8a857d">
+        <text x="40" y="305" text-anchor="start">Dec 23</text>
+        <text x="225" y="305" text-anchor="middle">Jun 24</text>
+        <text x="410" y="305" text-anchor="middle">Dec 24</text>
+        <text x="595" y="305" text-anchor="middle">Jun 25</text>
+        <text x="780" y="305" text-anchor="end">Dec 25</text>
+      </g>
+      <!-- liberation day marker -->
+      <line x1="566" y1="40" x2="566" y2="280" stroke="#a83232" stroke-width="1" stroke-dasharray="3,3" opacity="0.6"/>
+      <text x="566" y="34" text-anchor="middle" font-family="JetBrains Mono, monospace" font-size="9" fill="#a83232" data-i18n="equity.event">Aranceles · Abr 25</text>
+
+      <!-- B&H curve (loss) -->
+      <path d="M 40 280 L 70.83 274.4 L 101.67 261.2 L 132.5 245.82 L 163.33 233.7 L 194.17 229.76 L 225 222.82 L 255.83 209.86 L 286.67 195.92 L 317.5 185.98 L 348.33 182.36 L 379.17 167.86 L 410 148.44 L 440.83 136.42 L 471.67 126.66 L 502.5 105.62 L 533.33 102.22 L 564.17 118.72 L 595 130 L 625.83 139.78 L 656.67 154.08 L 687.5 156.42 L 718.33 158.34 L 749.17 160.54 L 780 161.6"
+        fill="none" stroke="#c8b8a0" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+
+      <!-- Markowitz curve -->
+      <path d="M 40 280 L 70.83 274.84 L 101.67 262.7 L 132.5 248.56 L 163.33 237.4 L 194.17 233.76 L 225 226.82 L 255.83 213.86 L 286.67 199.92 L 317.5 189.98 L 348.33 186.36 L 379.17 171.86 L 410 152.44 L 440.83 140.42 L 471.67 137 L 502.5 128.0 L 533.33 119.02 L 564.17 116.24 L 595 123.26 L 625.83 134.58 L 656.67 143.04 L 687.5 144.52 L 718.33 146.9 L 749.17 149.64 L 780 150.94"
+        fill="none" stroke="#8a857d" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+
+      <!-- InvestBot curve (winner) -->
+      <path d="M 40 280 L 70.83 275.3 L 101.67 264.2 L 132.5 251.28 L 163.33 241.12 L 194.17 237.76 L 225 230.82 L 255.83 217.86 L 286.67 203.92 L 317.5 193.98 L 348.33 190.36 L 379.17 175.86 L 410 156.44 L 440.83 144.42 L 471.67 138.96 L 502.5 124.0 L 533.33 109.04 L 564.17 103.9 L 595 101.94 L 625.83 100.66 L 656.67 96.06 L 687.5 92.06 L 718.33 88.78 L 749.17 81.58 L 780 77.58"
+        fill="none" stroke="#1e6b4f" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/>
+
+      <!-- end markers -->
+      <circle cx="780" cy="77.58" r="4" fill="#1e6b4f"/>
+      <circle cx="780" cy="150.94" r="3" fill="#8a857d"/>
+      <circle cx="780" cy="161.6" r="3" fill="#c8b8a0"/>
+    </svg>
+
+    <div class="equity-stats">
+      <div class="eq-stat win">
+        <div class="name" data-i18n="stats.bot.name">InvestBot AI</div>
+        <div class="val">+2.1 %</div>
+        <div class="sub" data-i18n="stats.bot.sub">20.121 € · sobre 19.700 € aportados</div>
+      </div>
+      <div class="eq-stat loss">
+        <div class="name" data-i18n="stats.mark.name">Markowitz clásico</div>
+        <div class="val">−16.5 %</div>
+        <div class="sub" data-i18n="stats.mark.sub">16.453 € · pérdida 3.247 €</div>
+      </div>
+      <div class="eq-stat loss">
+        <div class="name" data-i18n="stats.bnh.name">Buy &amp; Hold</div>
+        <div class="val">−19.2 %</div>
+        <div class="sub" data-i18n="stats.bnh.sub">15.920 € · pérdida 3.780 €</div>
+      </div>
     </div>
+  </div>
+
+  <div class="cta-row">
+    <a href="https://github.com/luisrodriguezlopez96/InvestBot-AI-public" target="_blank" rel="noopener" class="btn btn-primary">
+      <svg viewBox="0 0 24 24"><path d="M12 .297c-6.63 0-12 5.373-12 12 0 5.303 3.438 9.8 8.205 11.385.6.113.82-.258.82-.577 0-.285-.01-1.04-.015-2.04-3.338.724-4.042-1.61-4.042-1.61C4.422 18.07 3.633 17.7 3.633 17.7c-1.087-.744.084-.729.084-.729 1.205.084 1.838 1.236 1.838 1.236 1.07 1.835 2.809 1.305 3.495.998.108-.776.417-1.305.76-1.605-2.665-.3-5.466-1.332-5.466-5.93 0-1.31.465-2.38 1.235-3.22-.135-.303-.54-1.523.105-3.176 0 0 1.005-.322 3.3 1.23.96-.267 1.98-.399 3-.405 1.02.006 2.04.138 3 .405 2.28-1.552 3.285-1.23 3.285-1.23.645 1.653.24 2.873.12 3.176.765.84 1.23 1.91 1.23 3.22 0 4.61-2.805 5.625-5.475 5.92.42.36.81 1.096.81 2.22 0 1.606-.015 2.896-.015 3.286 0 .315.21.69.825.57C20.565 22.092 24 17.592 24 12.297c0-6.627-5.373-12-12-12"/></svg>
+      <span data-i18n="cta.repo">Ver repositorio público</span>
+    </a>
+    <a href="https://www.linkedin.com/in/luisrodriguezlopez96/" target="_blank" rel="noopener" class="btn btn-secondary">
+      <svg viewBox="0 0 24 24"><path d="M20.447 20.452h-3.554v-5.569c0-1.328-.027-3.037-1.852-3.037-1.853 0-2.136 1.445-2.136 2.939v5.667H9.351V9h3.414v1.561h.046c.477-.9 1.637-1.85 3.37-1.85 3.601 0 4.267 2.37 4.267 5.455v6.286zM5.337 7.433a2.062 2.062 0 01-2.063-2.065 2.064 2.064 0 112.063 2.065zm1.782 13.019H3.555V9h3.564v11.452zM22.225 0H1.771C.792 0 0 .774 0 1.729v20.542C0 23.227.792 24 1.771 24h20.451C23.2 24 24 23.227 24 22.271V1.729C24 .774 23.2 0 22.222 0h.003z"/></svg>
+      <span data-i18n="cta.linkedin">Conectar en LinkedIn</span>
+    </a>
+  </div>
 </section>
 
-<!-- RESULTADOS -->
-<section id="resultados" class="section">
-    <div class="section-header">
-        <h2 data-i18n="results.h2">Resultados de Backtesting Realista</h2>
-        <p class="subtitle" data-i18n="results.subtitle">Simulación de inversión en el período Dic. 2023 – Dic. 2025 con todas las fricciones del mundo real.</p>
+<!-- ════════ RESULTS ════════ -->
+<section class="section" id="results">
+  <div class="section-head">
+    <div class="section-num">§ 01 / 08</div>
+    <div>
+      <h2 data-i18n-html="results.h2">El sistema ganó dinero<br>en un mercado bajista.</h2>
+      <p class="lede" data-i18n="results.lede">Simulación de inversión en un período donde el mercado europeo cayó. Los benchmarks pasivos perdieron capital. InvestBot lo preservó manteniéndose en liquidez en los momentos correctos.</p>
     </div>
-    <div class="grid-2">
-        <div class="card">
-            <h3 style="margin-top: 0;" data-i18n="results.rules.h3">Reglas de la Simulación</h3>
-            <ul style="line-height: 2;">
-                <li data-i18n-html="results.rules.capital">💰 <strong>Capital de partida:</strong> 10.000€</li>
-                <li data-i18n-html="results.rules.contribution">🔄 <strong>Aportación periódica:</strong> +100€ cada semana (Total aportado: 19.700€)</li>
-                <li data-i18n-html="results.rules.fees">💸 <strong>Comisiones reales:</strong> 0.1% por cada ajuste de la cartera</li>
-                <li data-i18n-html="results.rules.limit">⚖️ <strong>Límite de concentración:</strong> Máximo 40% en un solo ETF</li>
-            </ul>
-        </div>
-        <div class="card" style="padding:0;overflow:hidden;border:none;box-shadow:none;">
-            <div class="table-container">
-                <table style="margin:0;box-shadow:0 4px 20px rgba(0,0,0,0.04);">
-                    <tr>
-                        <th data-i18n="results.table.strategy">Estrategia</th>
-                        <th data-i18n="results.table.result">Resultado</th>
-                        <th data-i18n="results.table.final">Dinero final</th>
-                    </tr>
-                    <tr>
-                        <td data-i18n="results.bnh.name">Comprar y Esperar (Buy &amp; Hold)</td>
-                        <td style="color:var(--danger);font-weight:600;">−19.2% 📉</td>
-                        <td>~15.920€</td>
-                    </tr>
-                    <tr>
-                        <td data-i18n="results.markowitz.name">Fórmula Clásica (Markowitz)</td>
-                        <td style="color:var(--danger);font-weight:600;">−16.5% 📉</td>
-                        <td>~16.453€</td>
-                    </tr>
-                    <tr class="highlight-row">
-                        <td style="color:var(--accent);">InvestBot AI 🤖</td>
-                        <td style="color:var(--accent);font-weight:600;">+2.1% ✅</td>
-                        <td style="color:var(--accent);font-weight:600;">~20.121€</td>
-                    </tr>
-                </table>
-                <p class="table-note" data-i18n="results.note">De 19.700€ aportados, InvestBot devolvió 20.121€. Las otras dos estrategias perdieron dinero en el mismo período.</p>
-            </div>
-        </div>
+  </div>
+
+  <div class="grid-2">
+    <div class="card">
+      <h4 data-i18n="results.rules.h4">Reglas de la simulación</h4>
+      <ul style="line-height:2;padding-left:18px;margin:0;font-size:0.93rem;">
+        <li data-i18n-html="results.rules.li1"><strong>Capital inicial:</strong> 10.000 €</li>
+        <li data-i18n-html="results.rules.li2"><strong>DCA semanal:</strong> +100 € (total aportado: 19.700 €)</li>
+        <li data-i18n-html="results.rules.li3"><strong>Comisiones realistas:</strong> 0.1 % por rebalanceo</li>
+        <li data-i18n-html="results.rules.li4"><strong>Restricción de concentración:</strong> ≤ 40 % por activo</li>
+        <li data-i18n-html="results.rules.li5"><strong>Universo:</strong> 7 ETFs UCITS europeos diversificados</li>
+      </ul>
     </div>
-    <div class="highlight-box green" style="margin-top:30px;" data-i18n-html="results.key">
-        <strong>💡 La Clave:</strong> Cuando el mercado caía, InvestBot movía el dinero a efectivo. Las otras estrategias se quedaron dentro y sufrieron las pérdidas. El valor del sistema fue saber cuándo no invertir, protegiendo el capital en el 59% de las semanas.
+    <div>
+      <table class="results-table">
+        <tr>
+          <th data-i18n="results.col.strategy">Estrategia</th>
+          <th data-i18n="results.col.return">Retorno</th>
+          <th data-i18n="results.col.final">Final</th>
+        </tr>
+        <tr>
+          <td data-i18n="results.bnh">Buy &amp; Hold</td>
+          <td class="num delta-loss">−19.2 %</td>
+          <td class="num">15.920 €</td>
+        </tr>
+        <tr>
+          <td data-i18n="results.markowitz">Markowitz</td>
+          <td class="num delta-loss">−16.5 %</td>
+          <td class="num">16.453 €</td>
+        </tr>
+        <tr class="row-win">
+          <td>InvestBot AI</td>
+          <td class="num delta-win">+2.1 %</td>
+          <td class="num">20.121 €</td>
+        </tr>
+      </table>
     </div>
+  </div>
+
+  <div class="callout green" style="margin-top:28px;">
+    <strong data-i18n="results.callout.title">La clave del alpha:</strong>
+    <span data-i18n="results.callout.body"> el sistema permaneció en efectivo el 59 % de las semanas. La protección de capital en regímenes adversos generó más valor que cualquier predicción positiva acertada.</span>
+  </div>
+
+  <div class="grid-3" style="margin-top:36px;">
+    <div class="card flat">
+      <h4 data-i18n="results.k1.h4">Acierto direccional</h4>
+      <div style="font-family:var(--serif);font-size:2.4rem;font-weight:500;letter-spacing:-0.02em;color:var(--accent-ink);">57.1 %</div>
+      <p style="margin:8px 0 0;font-size:0.85rem;color:var(--ink-mute);" data-i18n="results.k1.sub">~6 de cada 10 predicciones correctas — significativo sobre la línea base 50 %.</p>
+    </div>
+    <div class="card flat">
+      <h4 data-i18n="results.k2.h4">Alpha vs. mercado</h4>
+      <div style="font-family:var(--serif);font-size:2.4rem;font-weight:500;letter-spacing:-0.02em;color:var(--accent-ink);">+4.201 €</div>
+      <p style="margin:8px 0 0;font-size:0.85rem;color:var(--ink-mute);" data-i18n="results.k2.sub">Diferencia de capital final entre InvestBot y Buy &amp; Hold.</p>
+    </div>
+    <div class="card flat">
+      <h4 data-i18n="results.k3.h4">Semanas en liquidez</h4>
+      <div style="font-family:var(--serif);font-size:2.4rem;font-weight:500;letter-spacing:-0.02em;color:var(--accent-ink);">59 %</div>
+      <p style="margin:8px 0 0;font-size:0.85rem;color:var(--ink-mute);" data-i18n="results.k3.sub">El sistema priorizó preservar capital frente a forzar entradas en regímenes bajistas.</p>
+    </div>
+  </div>
 </section>
 
-<!-- ARQUITECTURA -->
-<section id="arquitectura" class="section">
-    <div class="section-header">
-        <h2 data-i18n="arch.h2">Arquitectura e Ingesta Multi-Fuente</h2>
-        <p class="subtitle" data-i18n="arch.subtitle">Un sistema desacoplado listo para producción, más allá de los notebooks exploratorios.</p>
+<!-- ════════ UNIVERSE ════════ -->
+<section class="section" id="universe">
+  <div class="section-head">
+    <div class="section-num">§ 02 / 08</div>
+    <div>
+      <h2 data-i18n-html="universe.h2">Tu cartera real,<br>no un universo cerrado.</h2>
+      <p class="lede" data-i18n="universe.lede">El usuario carga su propia cartera desde un CSV exportado de su bróker. InvestBot-AI no impone un universo fijo: lo aprende de tus posiciones reales.</p>
     </div>
-    <div class="grid-2" style="align-items:center;">
-        <div class="code-block">
-<span class="code-comment"># Estructura core del proyecto</span>
-<span class="code-folder">InvestBot-AI/</span>
-├── <span class="code-folder">src/investbot_ai/</span>
-│   ├── <span class="code-folder">data/</span>           <span class="code-comment"># yfinance + scraper JustETF</span>
-│   ├── <span class="code-folder">features/</span>       <span class="code-comment"># Pandas-TA, RSI, rolling</span>
-│   ├── <span class="code-folder">models/</span>         <span class="code-comment"># XGBoost, Optuna tuning</span>
-│   ├── <span class="code-folder">portfolio/</span>      <span class="code-comment"># PyPortfolioOpt, Markowitz</span>
-│   ├── <span class="code-folder">backtesting/</span>    <span class="code-comment"># Motor de DCA y comisiones</span>
-│   ├── <span class="code-folder">xai/</span>            <span class="code-comment"># SHAP Explainers</span>
-│   └── <span class="code-folder">chatbot/</span>        <span class="code-comment"># Asistente local Ollama</span>
+  </div>
+
+  <div class="grid-2" style="align-items:start;">
+    <div>
+      <div class="callout" style="margin:0 0 24px;background:var(--paper-2);border-color:var(--rule);">
+        <div style="font-family:var(--mono);font-size:0.72rem;letter-spacing:0.08em;color:var(--ink-mute);margin-bottom:10px;">FLUJO DE CARGA</div>
+        <ol class="universe-flow">
+          <li><span class="uflow-num">1</span><div><strong data-i18n="universe.f1.t">Exporta tu cartera</strong><span data-i18n="universe.f1.b"> · MyInvestor, DEGIRO, Trade Republic, Interactive Brokers — el bróker que uses.</span></div></li>
+          <li><span class="uflow-num">2</span><div><strong data-i18n="universe.f2.t">Sube el CSV</strong><span data-i18n="universe.f2.b"> · El parser detecta tickers ISIN/Yahoo y normaliza posiciones, costes y divisa.</span></div></li>
+          <li><span class="uflow-num">3</span><div><strong data-i18n="universe.f3.t">El sistema descarga histórico</strong><span data-i18n="universe.f3.b"> · yfinance enriquece con OHLCV diario y construye features para cada activo cargado.</span></div></li>
+          <li><span class="uflow-num">4</span><div><strong data-i18n="universe.f4.t">Modelo + optimización</strong><span data-i18n="universe.f4.b"> · XGBoost predice y Markowitz optimiza sobre <em>tu</em> universo, no uno genérico.</span></div></li>
+        </ol>
+      </div>
+      <p style="font-size:0.92rem;color:var(--ink-soft);margin:0;" data-i18n-html="universe.note">Compatible con <strong>ETFs, acciones y fondos cotizados</strong> con histórico en yfinance. El modelo se reentrena dinámicamente sobre el universo que cargues.</p>
+    </div>
+
+    <div>
+      <div style="font-family:var(--mono);font-size:0.72rem;letter-spacing:0.08em;color:var(--ink-mute);margin-bottom:14px;" data-i18n="universe.example.label">EJEMPLO · CARTERA DEL AUTOR (TFM)</div>
+      <table class="universe-table">
+        <thead>
+          <tr>
+            <th data-i18n="universe.table.ticker">Ticker</th>
+            <th data-i18n="universe.table.name">Nombre</th>
+            <th data-i18n="universe.table.region">Región</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr><td class="mono">CS1.PA</td><td>iShares Core MSCI World</td><td><span class="region-tag">Global</span></td></tr>
+          <tr><td class="mono">EUNL.DE</td><td>iShares Core MSCI World</td><td><span class="region-tag">Europa</span></td></tr>
+          <tr><td class="mono">FLXC.MI</td><td>Franklin FTSE China</td><td><span class="region-tag">China</span></td></tr>
+          <tr><td class="mono">VGWE.DE</td><td>Vanguard FTSE All-World</td><td><span class="region-tag">Global</span></td></tr>
+          <tr><td class="mono">XAIX.MI</td><td>Xtrackers AI &amp; Big Data</td><td><span class="region-tag">Tecnología</span></td></tr>
+          <tr><td class="mono">XESC.MI</td><td>Xtrackers MSCI Europe ESG</td><td><span class="region-tag">Europa ESG</span></td></tr>
+          <tr><td class="mono">XMME.DE</td><td>Xtrackers MSCI EM</td><td><span class="region-tag">Emergentes</span></td></tr>
+        </tbody>
+      </table>
+      <p class="src-desc" style="margin-top:14px;" data-i18n="universe.example.cap">Estos 7 ETFs son solo un ejemplo. Cada usuario carga los suyos.</p>
+    </div>
+  </div>
+</section>
+
+<!-- ════════ HOW IT WORKS ════════ -->
+<section class="section" id="how">
+  <div class="section-head">
+    <div class="section-num">§ 03 / 08</div>
+    <div>
+      <h2 data-i18n-html="how.h2">Cómo decide<br>el sistema cada semana.</h2>
+      <p class="lede" data-i18n="how.lede">Cuatro fases automatizadas que convierten datos de mercado crudos en una asignación de capital con explicación lingüística.</p>
+    </div>
+  </div>
+
+  <div class="flow">
+    <div class="flow-step">
+      <div class="num">01 · <span data-i18n="how.s1.tag">Ingesta</span></div>
+      <h4 data-i18n="how.s1.title">Datos de mercado</h4>
+      <p data-i18n="how.s1.body">Precios OHLCV diarios de 7 ETFs UCITS, VIX y EUR/USD vía yfinance. Composición sectorial y geográfica scraped desde JustETF. Persistencia en Parquet.</p>
+    </div>
+    <div class="flow-step">
+      <div class="num">02 · <span data-i18n="how.s2.tag">Predicción</span></div>
+      <h4 data-i18n="how.s2.title">XGBoost + Optuna</h4>
+      <p data-i18n="how.s2.body">11 features con justificación financiera (momentum, RSI, volatilidad, macro). Modelo entrenado 2019–2023, validado out-of-sample en 2024–2025.</p>
+    </div>
+    <div class="flow-step">
+      <div class="num">03 · <span data-i18n="how.s3.tag">Optimización</span></div>
+      <h4 data-i18n="how.s3.title">PyPortfolioOpt</h4>
+      <p data-i18n="how.s3.body">Las predicciones positivas alimentan un Markowitz restringido (cap 40 %, no-shorting). Las negativas se traducen en posición de liquidez.</p>
+    </div>
+    <div class="flow-step">
+      <div class="num">04 · <span data-i18n="how.s4.tag">Explicación</span></div>
+      <h4 data-i18n="how.s4.title">SHAP + Ollama</h4>
+      <p data-i18n="how.s4.body">Cada decisión es desglosada por SHAP. Un LLM local (llama3.2:3b) traduce las contribuciones a lenguaje natural en el informe semanal.</p>
+    </div>
+  </div>
+</section>
+
+<!-- ════════ ARCHITECTURE ════════ -->
+<section class="section" id="architecture">
+  <div class="section-head">
+    <div class="section-num">§ 04 / 08</div>
+    <div>
+      <h2 data-i18n-html="arch.h2">Arquitectura<br>de producción.</h2>
+      <p class="lede" data-i18n="arch.lede">Un sistema desacoplado que separa investigación (notebooks) de lógica de negocio (módulos Python en <code>src/</code>) — más allá del prototipo de TFM.</p>
+    </div>
+  </div>
+
+  <div class="grid-2" style="align-items:start;">
+    <pre class="code-block"><span class="c-comment"># Estructura modular del proyecto</span>
+<span class="c-folder">InvestBot-AI/</span>
+├── <span class="c-folder">src/investbot_ai/</span>
+│   ├── <span class="c-folder">data/</span>           <span class="c-comment"># yfinance + scraper JustETF</span>
+│   ├── <span class="c-folder">features/</span>       <span class="c-comment"># Pandas-TA, RSI, rolling stats</span>
+│   ├── <span class="c-folder">models/</span>         <span class="c-comment"># XGBoost + Optuna tuning</span>
+│   ├── <span class="c-folder">portfolio/</span>      <span class="c-comment"># PyPortfolioOpt, Markowitz</span>
+│   ├── <span class="c-folder">backtesting/</span>    <span class="c-comment"># Motor DCA + comisiones</span>
+│   ├── <span class="c-folder">xai/</span>            <span class="c-comment"># SHAP explainers</span>
+│   └── <span class="c-folder">chatbot/</span>        <span class="c-comment"># Asistente local Ollama</span>
 │
-├── <span class="code-folder">app/</span>              <span class="code-comment"># UI Frontend en Streamlit</span>
-├── <span class="code-folder">notebooks/</span>        <span class="code-comment"># I+D, EDA y prototipado TFM</span>
-└── <span class="code-file">app.py</span>            <span class="code-comment"># Entry point del Dashboard</span>
-        </div>
-        <div>
-            <h3 data-i18n="arch.prod.h3">Software de Producción</h3>
-            <p data-i18n-html="arch.prod.p1">El proyecto separa la investigación (Jupyter Notebooks) de la lógica de negocio (Python Modules en <code>src/</code>).</p>
-            <p data-i18n-html="arch.prod.p2">Los datos cuantitativos se guardan en <strong>Parquet</strong> para máxima eficiencia, mientras que el historial de operaciones y el estado de la cartera se persisten en una base de datos <strong>SQLite</strong>.</p>
-            <div class="tech-pills">
-                <span class="pill pill-blue">yfinance</span>
-                <span class="pill pill-green">BeautifulSoup4</span>
-                <span class="pill pill-slate">PyPortfolioOpt</span>
-                <span class="pill pill-slate">Pandas-TA</span>
-                <span class="pill pill-purple">XGBoost + Optuna</span>
-                <span class="pill pill-slate">SHAP</span>
-                <span class="pill pill-green">Ollama</span>
-                <span class="pill pill-slate">Streamlit</span>
-            </div>
-        </div>
+├── <span class="c-folder">app/</span>              <span class="c-comment"># Frontend Streamlit</span>
+├── <span class="c-folder">notebooks/</span>        <span class="c-comment"># I+D, EDA, prototipado</span>
+└── <span class="c-file">app.py</span>            <span class="c-comment"># Entrypoint</span></pre>
+
+    <div>
+      <h3 data-i18n="arch.right.h3">Decisiones de ingeniería</h3>
+      <p data-i18n-html="arch.right.p1">Datos cuantitativos en <strong>Parquet</strong> para eficiencia de I/O. Estado de cartera y ledger de operaciones en <strong>SQLite</strong> con migraciones controladas. Logging estructurado y trazabilidad por versión de modelo.</p>
+      <p data-i18n-html="arch.right.p2">El frontend (Streamlit) y el asistente (Ollama) son consumidores del mismo backend desacoplado — no hay lógica de negocio en la capa de presentación.</p>
+      <div class="tech-pills">
+        <span class="pill dark">Python 3.11</span>
+        <span class="pill">yfinance</span>
+        <span class="pill">BeautifulSoup4</span>
+        <span class="pill">Pandas-TA</span>
+        <span class="pill">XGBoost</span>
+        <span class="pill">Optuna</span>
+        <span class="pill">PyPortfolioOpt</span>
+        <span class="pill">SHAP</span>
+        <span class="pill">Ollama</span>
+        <span class="pill">Streamlit</span>
+      </div>
     </div>
-    <div class="sources-grid">
-        <div class="source-card">
-            <div class="source-num" data-i18n="source1.num">Fuente 1</div>
-            <div class="source-name">yfinance</div>
-            <div class="source-desc" data-i18n="source1.desc">Precios OHLCV diarios para 7 ETFs + VIX + EUR/USD. Base del entrenamiento XGBoost.</div>
-        </div>
-        <div class="source-card">
-            <div class="source-num" data-i18n="source2.num">Fuente 2</div>
-            <div class="source-name">JustETF (scraper)</div>
-            <div class="source-desc" data-i18n="source2.desc">Extracción de holdings, distribución geográfica y sectorial de cada ETF con BeautifulSoup4.</div>
-        </div>
-        <div class="source-card">
-            <div class="source-num" data-i18n="source3.num">Fuente 3</div>
-            <div class="source-name">Investing.com</div>
-            <div class="source-desc" data-i18n="source3.desc">Calendario económico y sentimiento técnico. Usados para enriquecer el dashboard, no inyectados en el modelo (robustez del pipeline).</div>
-        </div>
+  </div>
+
+  <div class="sources">
+    <div class="source">
+      <div class="src-num" data-i18n="src1.num">FUENTE 01</div>
+      <div class="src-name">yfinance</div>
+      <p class="src-desc" data-i18n="src1.desc">Precios OHLCV diarios para 7 ETFs + VIX + EUR/USD. Base del entrenamiento del modelo XGBoost.</p>
     </div>
-    <div class="highlight-box" style="margin-top:20px;background:#fefce8;border-color:#f59e0b;" data-i18n-html="arch.design">
-        <strong>🔩 Decisión de Diseño:</strong> Los datos de scraping enriquecen el dashboard y el asistente conversacional, pero <strong>no se inyectan en el modelo XGBoost</strong>. Esto garantiza que el pipeline de predicción no dependa de la estabilidad del HTML de terceros y mantiene el 100% de reproducibilidad académica.
+    <div class="source">
+      <div class="src-num" data-i18n="src2.num">FUENTE 02</div>
+      <div class="src-name">JustETF (scraper)</div>
+      <p class="src-desc" data-i18n="src2.desc">Holdings, distribución sectorial y geográfica de cada ETF. Implementado con BeautifulSoup4 y caching local.</p>
     </div>
+    <div class="source">
+      <div class="src-num" data-i18n="src3.num">FUENTE 03</div>
+      <div class="src-name">Investing.com</div>
+      <p class="src-desc" data-i18n="src3.desc">Calendario económico y sentimiento técnico — para enriquecer el dashboard, no inyectados al modelo.</p>
+    </div>
+  </div>
+
+  <div class="callout warn" style="margin-top:28px;">
+    <strong data-i18n="arch.callout.title">Decisión de diseño:</strong>
+    <span data-i18n-html="arch.callout.body"> los datos de scraping enriquecen dashboard y asistente, pero <strong>no se inyectan al modelo XGBoost</strong>. Así el pipeline de predicción no depende de la estabilidad del HTML de terceros y mantiene reproducibilidad académica.</span>
+  </div>
 </section>
 
-<!-- RIGOR -->
-<section id="rigor" class="section">
-    <div class="section-header">
-        <h2 data-i18n="rigor.h2">Rigor Académico y Honestidad</h2>
-        <p class="subtitle" data-i18n="rigor.subtitle">El sistema fue diseñado sin trampas y es transparente sobre sus limitaciones.</p>
+<!-- ════════ RIGOR ════════ -->
+<section class="section" id="rigor">
+  <div class="section-head">
+    <div class="section-num">§ 05 / 08</div>
+    <div>
+      <h2 data-i18n-html="rigor.h2">Rigor académico<br>y honestidad metodológica.</h2>
+      <p class="lede" data-i18n="rigor.lede">El sistema fue diseñado sin trampas y es transparente sobre lo que <em>no</em> puede hacer.</p>
     </div>
-    <div class="grid-3">
-        <div class="card">
-            <h3 data-i18n="rigor.nodata.h3">🛡️ Sin Trampas en los Datos</h3>
-            <p data-i18n="rigor.nodata.p">El modelo se entrenó con datos de 2019 a 2023, y se verificó con los datos de 2024-2025, que nunca había visto. Es como estudiar con libros viejos y aprobar un examen con preguntas nuevas.</p>
-        </div>
-        <div class="card">
-            <h3 data-i18n="rigor.patterns.h3">⚙️ Aprende Patrones, no Memoriza</h3>
-            <p data-i18n-html="rigor.patterns.p">Se tomaron precauciones técnicas (análogas a <em>Dropout</em> en redes neuronales) para evitar que el modelo simplemente "memorizara" el pasado, asegurando que aprenda reglas generalizables.</p>
-        </div>
-        <div class="card highlight-box red" style="margin-bottom:0;border-radius:16px;border-left:none;border-bottom:4px solid var(--danger);">
-            <h3 style="color:var(--danger);" data-i18n="rigor.limits.h3">⚠️ Lo que la IA no Puede Predecir</h3>
-            <p data-i18n="rigor.limits.p">Ningún modelo puede anticipar noticias inesperadas. En abril de 2025, los aranceles de EE.UU. provocaron una caída que el sistema no vio venir. Esta herramienta ayuda a invertir mejor, no a adivinar el futuro.</p>
-        </div>
-    </div>
+  </div>
 
-    <!-- Features table -->
-    <div class="card" style="margin-top:30px;">
-        <h3 style="margin-top:0;" data-i18n="rigor.features.h3">📐 Las 11 Features del Modelo — Justificación Teórica</h3>
-        <p style="color:var(--muted);margin-bottom:20px;" data-i18n="rigor.features.p">Cada variable fue seleccionada con base en teoría financiera, no por búsqueda exhaustiva. Esto es una garantía adicional contra el overfitting por selección de variables.</p>
-        <div class="table-container">
-            <table>
-                <tr>
-                    <th data-i18n="rigor.table.feature">Feature</th>
-                    <th data-i18n="rigor.table.type">Tipo</th>
-                    <th data-i18n="rigor.table.justification">Justificación Financiera</th>
-                </tr>
-                <tr>
-                    <td><code>return_1d / 5d / 21d</code></td>
-                    <td>Momentum</td>
-                    <td data-i18n="rigor.f1.justification">Captura el efecto momentum a corto y medio plazo (Jegadeesh &amp; Titman, 1993)</td>
-                </tr>
-                <tr>
-                    <td><code>rsi_14</code></td>
-                    <td>Momentum / Reversión</td>
-                    <td data-i18n="rigor.f2.justification">RSI &gt;70 señala sobrecompra; &lt;30 señala potencial rebote (mean-reversion)</td>
-                </tr>
-                <tr>
-                    <td><code>vol_21d</code></td>
-                    <td>Riesgo</td>
-                    <td data-i18n="rigor.f3.justification">Volatilidad realizada como proxy de incertidumbre y régimen de mercado</td>
-                </tr>
-                <tr>
-                    <td><code>sma_ratio_50</code></td>
-                    <td>Tendencia</td>
-                    <td data-i18n="rigor.f4.justification">Precio relativo a media móvil 50d: por encima = tendencia alcista confirmada</td>
-                </tr>
-                <tr>
-                    <td><code>bb_position</code></td>
-                    <td>Reversión</td>
-                    <td data-i18n="rigor.f5.justification">Posición dentro de Bandas de Bollinger: extremos indican reversión estadística</td>
-                </tr>
-                <tr style="background:#eff6ff;">
-                    <td><code>vix + vix_change_5d</code></td>
-                    <td><strong>Macro — Miedo</strong></td>
-                    <td data-i18n="rigor.f6.justification">VIX elevado reduce apetito por riesgo global; cambio en 5d captura giros de régimen</td>
-                </tr>
-                <tr style="background:#eff6ff;">
-                    <td><code>eurusd + eurusd_change_5d</code></td>
-                    <td><strong>Macro — Divisa</strong></td>
-                    <td data-i18n="rigor.f7.justification">EUR/USD afecta la rentabilidad en EUR de activos denominados en USD (efecto divisa)</td>
-                </tr>
-            </table>
-        </div>
-        <p style="font-size:0.8rem;color:var(--muted);margin-top:12px;" data-i18n="rigor.features.note">Las features macro (fondo azul) resultaron ser las más predictivas según el análisis SHAP, superando a los indicadores técnicos del ETF individual.</p>
+  <div class="grid-3">
+    <div class="card">
+      <h4 data-i18n="rigor.r1.tag">PROTECCIÓN — DATA LEAKAGE</h4>
+      <h3 data-i18n="rigor.r1.title">Sin contaminación temporal</h3>
+      <p style="margin:0;color:var(--ink-soft);font-size:0.92rem;" data-i18n="rigor.r1.body">El modelo se entrenó con datos 2019–2023 y se validó en 2024–2025 — datos que nunca había visto. Estudiar con libros viejos y aprobar con preguntas nuevas.</p>
     </div>
+    <div class="card">
+      <h4 data-i18n="rigor.r2.tag">PROTECCIÓN — OVERFITTING</h4>
+      <h3 data-i18n="rigor.r2.title">Aprende, no memoriza</h3>
+      <p style="margin:0;color:var(--ink-soft);font-size:0.92rem;" data-i18n-html="rigor.r2.body">Regularización L1/L2, <em>early stopping</em> con validación temporal, profundidad limitada de árboles. El objetivo: reglas generalizables, no patrones espurios del training set.</p>
+    </div>
+    <div class="card" style="border-left:3px solid var(--danger);">
+      <h4 style="color:var(--danger);" data-i18n="rigor.r3.tag">LÍMITES — TRANSPARENCIA</h4>
+      <h3 data-i18n="rigor.r3.title">Lo que la IA no puede</h3>
+      <p style="margin:0;color:var(--ink-soft);font-size:0.92rem;" data-i18n="rigor.r3.body">Ningún modelo cuantitativo anticipa shocks políticos. Los aranceles de abril 2025 provocaron una caída que el sistema no vio venir — y eso es honesto.</p>
+    </div>
+  </div>
+
+  <div style="margin-top:36px;">
+    <h3 style="margin-bottom:14px;" data-i18n="rigor.features.h3">Las 11 features del modelo · justificación teórica</h3>
+    <p style="color:var(--ink-soft);margin-bottom:20px;font-size:0.95rem;max-width:780px;" data-i18n="rigor.features.lede">Cada variable fue seleccionada por hipótesis financiera, no por búsqueda exhaustiva. Una garantía adicional contra el overfitting por selección de variables.</p>
+
+    <table class="results-table">
+      <tr>
+        <th data-i18n="rigor.col.feature">Feature</th>
+        <th data-i18n="rigor.col.type">Tipo</th>
+        <th data-i18n="rigor.col.justification">Justificación financiera</th>
+      </tr>
+      <tr>
+        <td class="mono" style="font-size:0.85rem">return_1d / 5d / 21d</td>
+        <td data-i18n="rigor.t1.type">Momentum</td>
+        <td data-i18n="rigor.t1.body">Captura el efecto momentum a corto y medio plazo (Jegadeesh &amp; Titman, 1993).</td>
+      </tr>
+      <tr>
+        <td class="mono" style="font-size:0.85rem">rsi_14</td>
+        <td data-i18n="rigor.t2.type">Reversión</td>
+        <td data-i18n="rigor.t2.body">RSI &gt; 70 sobrecompra, &lt; 30 potencial rebote (mean-reversion).</td>
+      </tr>
+      <tr>
+        <td class="mono" style="font-size:0.85rem">vol_21d</td>
+        <td data-i18n="rigor.t3.type">Riesgo</td>
+        <td data-i18n="rigor.t3.body">Volatilidad realizada como proxy de incertidumbre y régimen de mercado.</td>
+      </tr>
+      <tr>
+        <td class="mono" style="font-size:0.85rem">sma_ratio_50</td>
+        <td data-i18n="rigor.t4.type">Tendencia</td>
+        <td data-i18n="rigor.t4.body">Precio relativo a media móvil 50d — por encima = tendencia alcista confirmada.</td>
+      </tr>
+      <tr>
+        <td class="mono" style="font-size:0.85rem">bb_position</td>
+        <td data-i18n="rigor.t5.type">Reversión</td>
+        <td data-i18n="rigor.t5.body">Posición dentro de Bandas de Bollinger; extremos indican reversión estadística.</td>
+      </tr>
+      <tr style="background:#eef3ee;">
+        <td class="mono" style="font-size:0.85rem">vix + vix_change_5d</td>
+        <td><strong data-i18n="rigor.t6.type">Macro · Miedo</strong></td>
+        <td data-i18n="rigor.t6.body">VIX elevado reduce apetito por riesgo global; cambio en 5d captura giros de régimen.</td>
+      </tr>
+      <tr style="background:#eef3ee;">
+        <td class="mono" style="font-size:0.85rem">eurusd + eurusd_change_5d</td>
+        <td><strong data-i18n="rigor.t7.type">Macro · Divisa</strong></td>
+        <td data-i18n="rigor.t7.body">EUR/USD afecta la rentabilidad en EUR de activos USD (efecto divisa).</td>
+      </tr>
+    </table>
+    <p style="font-size:0.82rem;color:var(--ink-mute);margin-top:12px;font-style:italic;" data-i18n="rigor.features.note">Las features macro (resaltadas) resultaron las más predictivas según SHAP — superando a los indicadores técnicos del ETF individual.</p>
+  </div>
 </section>
 
-<!-- XAI / SHAP -->
-<section id="xai" class="section">
-    <div class="section-header">
-        <h2 data-i18n="xai.h2">Explicabilidad del Modelo (XAI)</h2>
-        <p class="subtitle" data-i18n="xai.subtitle">El modelo no es una caja negra. Cada predicción tiene una razón cuantificable.</p>
+<!-- ════════ XAI ════════ -->
+<section class="section" id="xai">
+  <div class="section-head">
+    <div class="section-num">§ 06 / 08</div>
+    <div>
+      <h2 data-i18n-html="xai.h2">Explicabilidad.<br>Cada predicción tiene una razón.</h2>
+      <p class="lede" data-i18n="xai.lede">El modelo no es una caja negra. SHAP (SHapley Additive exPlanations) descompone cada decisión en contribuciones cuantificables por feature.</p>
+    </div>
+  </div>
+
+  <div class="grid-2">
+    <div class="card">
+      <h3 style="margin-bottom:14px;" data-i18n="xai.left.h3">¿Qué mueve los mercados?</h3>
+      <p style="color:var(--ink-soft);font-size:0.95rem;" data-i18n-html="xai.left.body">El análisis SHAP sobre el conjunto de test reveló que las <strong>señales macroeconómicas dominan sobre los indicadores técnicos individuales</strong> de cada ETF.</p>
+
+      <div class="shap-list" style="margin-top:24px;">
+        <div class="shap-row">
+          <div class="shap-meta"><span data-i18n="xai.f1">Cambio EUR/USD · 5d</span><span class="rank">#1 · 100%</span></div>
+          <div class="shap-bar"><div class="shap-fill" style="width:100%"></div></div>
+        </div>
+        <div class="shap-row">
+          <div class="shap-meta"><span data-i18n="xai.f2">Cambio VIX · 5d</span><span class="rank">#2 · 88%</span></div>
+          <div class="shap-bar"><div class="shap-fill" style="width:88%"></div></div>
+        </div>
+        <div class="shap-row">
+          <div class="shap-meta"><span data-i18n="xai.f3">Nivel EUR/USD</span><span class="rank">#3 · 72%</span></div>
+          <div class="shap-bar"><div class="shap-fill muted" style="width:72%"></div></div>
+        </div>
+        <div class="shap-row">
+          <div class="shap-meta"><span data-i18n="xai.f4">RSI-14</span><span class="rank">#4 · 55%</span></div>
+          <div class="shap-bar"><div class="shap-fill muted" style="width:55%"></div></div>
+        </div>
+        <div class="shap-row">
+          <div class="shap-meta"><span data-i18n="xai.f5">Volatilidad · 21d</span><span class="rank">#5 · 43%</span></div>
+          <div class="shap-bar"><div class="shap-fill muted" style="width:43%"></div></div>
+        </div>
+      </div>
+      <p style="margin-top:18px;font-size:0.84rem;color:var(--ink-mute);font-style:italic;" data-i18n="xai.left.note">Conclusión: los ETFs europeos se mueven por el ciclo macro (tipo de cambio + miedo global), no por momentum técnico individual.</p>
     </div>
 
-    <div class="grid-2">
-        <div class="card">
-            <h3 style="margin-top:0;" data-i18n="xai.what.h3">¿Qué Mueve Realmente los Mercados?</h3>
-            <p data-i18n-html="xai.what.p">El análisis SHAP (SHapley Additive exPlanations) sobre el conjunto de test reveló que las <strong>señales macroeconómicas dominan sobre los indicadores técnicos individuales</strong> de cada ETF:</p>
-
-            <div style="margin-top:20px;display:flex;flex-direction:column;gap:10px;">
-                <div>
-                    <div style="display:flex;justify-content:space-between;font-size:0.85rem;font-weight:600;margin-bottom:4px;"><span data-i18n="xai.shap.label1">Cambio EUR/USD 5d</span><span style="color:var(--accent);">#1</span></div>
-                    <div style="background:#e2e8f0;height:8px;border-radius:4px;"><div style="width:100%;background:var(--accent);height:100%;border-radius:4px;"></div></div>
-                </div>
-                <div>
-                    <div style="display:flex;justify-content:space-between;font-size:0.85rem;font-weight:600;margin-bottom:4px;"><span data-i18n="xai.shap.label2">Cambio VIX 5d</span><span style="color:var(--accent);">#2</span></div>
-                    <div style="background:#e2e8f0;height:8px;border-radius:4px;"><div style="width:88%;background:var(--accent);height:100%;border-radius:4px;"></div></div>
-                </div>
-                <div>
-                    <div style="display:flex;justify-content:space-between;font-size:0.85rem;font-weight:600;margin-bottom:4px;"><span data-i18n="xai.shap.label3">Nivel EUR/USD</span><span style="color:#64748b;">#3</span></div>
-                    <div style="background:#e2e8f0;height:8px;border-radius:4px;"><div style="width:72%;background:#94a3b8;height:100%;border-radius:4px;"></div></div>
-                </div>
-                <div>
-                    <div style="display:flex;justify-content:space-between;font-size:0.85rem;font-weight:600;margin-bottom:4px;"><span data-i18n="xai.shap.label4">RSI-14</span><span style="color:#64748b;">#4</span></div>
-                    <div style="background:#e2e8f0;height:8px;border-radius:4px;"><div style="width:55%;background:#94a3b8;height:100%;border-radius:4px;"></div></div>
-                </div>
-                <div>
-                    <div style="display:flex;justify-content:space-between;font-size:0.85rem;font-weight:600;margin-bottom:4px;"><span data-i18n="xai.shap.label5">Volatilidad 21d</span><span style="color:#64748b;">#5</span></div>
-                    <div style="background:#e2e8f0;height:8px;border-radius:4px;"><div style="width:43%;background:#94a3b8;height:100%;border-radius:4px;"></div></div>
-                </div>
-            </div>
-            <p style="margin-top:16px;font-size:0.85rem;color:var(--muted);" data-i18n="xai.conclusion">Conclusión: el modelo aprendió que los ETFs europeos se mueven por el ciclo macro (tipo de cambio y miedo global), no por el momentum técnico individual de cada activo.</p>
+    <div style="display:flex;flex-direction:column;gap:24px;">
+      <div class="card" style="border-left:3px solid var(--danger);">
+        <h4 style="color:var(--danger);" data-i18n="xai.case.tag">CASO REAL · ABRIL 2025</h4>
+        <h3 data-i18n="xai.case.title">Liberation Day</h3>
+        <p style="color:var(--ink-soft);font-size:0.94rem;" data-i18n-html="xai.case.body">El waterfall del ETF <strong>XAIX.MI</strong> (Xtrackers AI &amp; Big Data) el 10 de abril de 2025 es el ejemplo más honesto del sistema: el modelo predijo subida basándose en EUR/USD favorable y VIX moderado. El mercado cayó por los aranceles anunciados.</p>
+        <div class="callout red" style="margin-top:14px;font-size:0.9rem;" data-i18n-html="xai.case.lesson">
+          <strong>Lección:</strong> un modelo cuantitativo es ciego a información política no descontada. La respuesta no es mejorar el modelo — es diseñar un sistema de gestión de riesgo que limite la exposición ante alta incertidumbre. Exactamente lo que hace la regla de liquidez.
         </div>
+      </div>
 
-        <div style="display:flex;flex-direction:column;gap:20px;">
-            <div class="card">
-                <h3 style="margin-top:0;color:var(--danger);" data-i18n="xai.case.h3">⚠️ Caso Real: Liberation Day (Abril 2025)</h3>
-                <p data-i18n-html="xai.case.p">El análisis waterfall del ETF <strong>XAIX.MI</strong> (Xtrackers AI &amp; Big Data) el 10 de abril de 2025 es el ejemplo más honesto del sistema: el modelo predijo una subida basándose en un EUR/USD favorable y VIX moderado. El mercado cayó por los aranceles de Trump.</p>
-                <div class="highlight-box red" style="margin-bottom:0;" data-i18n-html="xai.case.lesson">
-                    <strong>Lección académica:</strong> Un modelo cuantitativo es ciego a información política no descontada en el precio. La forma correcta de gestionar esto no es mejorar el modelo, sino diseñar un sistema de gestión de riesgo que limite la exposición ante alta incertidumbre — exactamente lo que hace la regla de liquidez del sistema.
-                </div>
-            </div>
-
-            <div class="card">
-                <h3 style="margin-top:0;" data-i18n="xai.prod.h3">SHAP en Producción</h3>
-                <p data-i18n-html="xai.prod.p">El módulo <code>src/investbot_ai/xai/shap_explainer.py</code> genera explicaciones en tiempo real. Cada semana, el informe automático incluye las <strong>top 3 razones SHAP</strong> de cada predicción en lenguaje legible para el usuario final.</p>
-                <p style="font-size:0.85rem;color:var(--muted);margin-bottom:0;" data-i18n-html="xai.prod.example">Ejemplo: <em>"La predicción positiva para EUNL.DE se debe principalmente a: (1) EUR/USD bajó un 1.2% esta semana — históricamente positivo para exportadoras europeas, (2) VIX por debajo de 18 — régimen de baja volatilidad."</em></p>
-            </div>
-        </div>
+      <div class="card">
+        <h4 data-i18n="xai.prod.tag">SHAP EN PRODUCCIÓN</h4>
+        <h3 data-i18n="xai.prod.title">Razones legibles, semanalmente</h3>
+        <p style="color:var(--ink-soft);font-size:0.94rem;" data-i18n-html="xai.prod.body">El módulo <code>src/investbot_ai/xai/shap_explainer.py</code> genera explicaciones en tiempo real. El informe semanal incluye las <strong>top 3 razones SHAP</strong> de cada predicción en lenguaje legible.</p>
+        <p style="margin-top:8px;font-size:0.86rem;color:var(--ink-soft);font-style:italic;" data-i18n-html="xai.prod.example">Ejemplo: <em>"La predicción positiva para EUNL.DE se debe a: (1) EUR/USD bajó 1.2 % esta semana — históricamente positivo para exportadoras europeas; (2) VIX por debajo de 18 — régimen de baja volatilidad."</em></p>
+      </div>
     </div>
+  </div>
 </section>
 
-<!-- ASISTENTE IA LOCAL -->
-<section id="chatbot" class="section">
-    <div class="section-header">
-        <h2 data-i18n="chatbot.h2">Asistente Financiero IA Local</h2>
-        <p class="subtitle" data-i18n="chatbot.subtitle">Privacidad por diseño: los datos de tu cartera nunca salen de tu dispositivo.</p>
+<!-- ════════ ASSISTANT ════════ -->
+<section class="section" id="assistant">
+  <div class="section-head">
+    <div class="section-num">§ 07 / 08</div>
+    <div>
+      <h2 data-i18n-html="assistant.h2">Asistente IA local.<br>Privacidad por diseño.</h2>
+      <p class="lede" data-i18n="assistant.lede">Tus datos financieros nunca salen de tu dispositivo. Ollama + llama3.2:3b ejecutándose localmente, con contexto dinámico de la cartera inyectado en cada respuesta.</p>
     </div>
-    <div class="grid-2" style="align-items:start;">
-        <div>
-            <div style="display:flex;gap:10px;flex-wrap:wrap;margin-bottom:25px;">
-                <span class="badge tfm" style="font-size:0.9rem;" data-i18n="chatbot.badge.local">🔒 100% Local · Sin APIs Cloud</span>
-                <span style="padding:6px 14px;font-weight:700;font-size:0.85rem;border-radius:20px;background:#f5f3ff;color:#6d28d9;border:1px solid #c4b5fd;">🦙 Ollama · llama3.2:3b</span>
-            </div>
-            <p data-i18n-html="chatbot.p1">El dashboard integra un asistente financiero conversacional que funciona <strong>100% en local</strong>, sin enviar ningún dato a APIs externas. Construido sobre <strong>Ollama</strong> con el modelo <strong>llama3.2:3b</strong> (seleccionable en runtime), el asistente recibe en cada pregunta el contexto dinámico de la sesión: composición actual de la cartera, pesos por ETF y las predicciones semanales del modelo XGBoost.</p>
-            <p data-i18n-html="chatbot.p2">Esto permite consultas como <em>"¿por qué estoy en liquidez esta semana?"</em> y recibir una respuesta fundamentada en las señales reales del modelo, no en conocimiento genérico. El diseño <strong>local-first</strong> es una decisión deliberada: los datos financieros personales no deben salir del dispositivo del usuario.</p>
-            <div class="highlight-box green" style="margin-top:25px;margin-bottom:25px;" data-i18n-html="chatbot.impl">
-                <strong>⚙️ Implementación técnica:</strong> Se usa la API nativa de Ollama con <code>stream=True</code> para respuestas en tiempo real. El contexto dinámico (cartera activa + predicciones XGBoost de la semana + composición ETF desde JustETF) se inyecta directamente en el <em>system prompt</em> de cada petición. Sin LangChain, sin OpenAI — dependencias cero de servicios externos.
-            </div>
-            <div class="tech-pills">
-                <span class="pill pill-green">Ollama</span>
-                <span class="pill pill-purple">llama3.2:3b</span>
-                <span class="pill pill-blue">stream=True</span>
-                <span class="pill pill-slate">Context injection</span>
-                <span class="pill pill-slate" data-i18n="chatbot.pill.panel">Panel flotante persistente</span>
-            </div>
-        </div>
-        <div>
-            <div class="chat-mock">
-                <div class="chat-mock-header"><div class="dot dot-red"></div><div class="dot dot-yellow"></div><div class="dot dot-green"></div><span class="title" data-i18n="chatbot.mock.title">InvestBot · Asistente Local (llama3.2:3b)</span></div>
-                <div class="chat-mock-body">
-                    <div class="chat-msg user"><span class="label" data-i18n="chatbot.label.user">Usuario</span><div class="bubble" data-i18n="chatbot.msg1.user">¿Por qué estamos en liquidez esta semana?</div></div>
-                    <div class="chat-msg bot"><span class="label" data-i18n="chatbot.label.bot">InvestBot IA</span><div class="bubble" data-i18n-html="chatbot.msg1.bot">El modelo XGBoost ha emitido señal <strong style="color:#f59e0b;">HOLD</strong> para los 7 ETFs esta semana. Las causas principales según el análisis SHAP son: VIX en zona 22.4 (umbral de "Alerta"), caída del EUR/USD del 1.8% en 5 días y retorno rolling negativo en CS1.PA (-2.3%). El sistema prioriza la preservación de capital frente a entrar en un mercado con momentum bajista confirmado.</div></div>
-                    <div class="chat-msg user"><span class="label" data-i18n="chatbot.label.user">Usuario</span><div class="bubble" data-i18n="chatbot.msg2.user">¿Qué exposición tenemos a tecnología?</div></div>
-                    <div class="chat-msg bot"><span class="label" data-i18n="chatbot.label.bot">InvestBot IA</span><div class="bubble" data-i18n="chatbot.msg2.bot">Actualmente el 0% de la cartera está invertido (posición en cash). Cuando el modelo reactiva las posiciones, la exposición a tecnología estimada sería del ~34% vía CS1.PA (S&amp;P500, ~28% tech) y VWRL (~18% tech global), según los datos de composición sectorial extraídos de JustETF.</div></div>
-                </div>
-            </div>
-        </div>
+  </div>
+
+  <div class="grid-2" style="align-items:start;">
+    <div>
+      <div style="display:flex;gap:8px;flex-wrap:wrap;margin-bottom:20px;">
+        <span class="pill dark" data-i18n="assistant.tag1">100 % LOCAL · SIN APIs CLOUD</span>
+        <span class="pill" data-i18n="assistant.tag2">Ollama · llama3.2:3b</span>
+      </div>
+      <p data-i18n-html="assistant.p1">El dashboard integra un asistente conversacional que funciona <strong>100 % en local</strong>. Construido sobre <strong>Ollama</strong> con modelo seleccionable en runtime, recibe en cada query el contexto dinámico: composición de cartera, pesos por ETF y predicciones XGBoost de la semana.</p>
+      <p data-i18n-html="assistant.p2">Esto permite consultas como <em>"¿por qué estoy en liquidez esta semana?"</em> y obtener respuesta fundamentada en señales reales del modelo, no en conocimiento genérico. La decisión <strong>local-first</strong> es deliberada: los datos financieros personales no deben salir del dispositivo.</p>
+
+      <div class="callout green" style="margin-top:20px;">
+        <strong data-i18n="assistant.tech.title">Implementación técnica:</strong>
+        <span data-i18n-html="assistant.tech.body"> API nativa de Ollama con <code>stream=True</code> para respuestas en streaming. El contexto (cartera + predicciones + composición ETF de JustETF) se inyecta directamente en el <em>system prompt</em>. Sin LangChain, sin OpenAI — dependencias cero.</span>
+      </div>
     </div>
+
+    <div class="chat-mock">
+      <div class="chat-head">
+        <div class="dot r"></div><div class="dot y"></div><div class="dot g"></div>
+        <span class="title" data-i18n="assistant.mock.title">InvestBot · Asistente Local (llama3.2:3b)</span>
+      </div>
+      <div class="chat-body">
+        <div class="chat-msg user">
+          <span class="lbl" data-i18n="assistant.lbl.user">Usuario</span>
+          <div class="bub" data-i18n="assistant.q1">¿Por qué estamos en liquidez esta semana?</div>
+        </div>
+        <div class="chat-msg bot">
+          <span class="lbl" data-i18n="assistant.lbl.bot">InvestBot AI</span>
+          <div class="bub" data-i18n-html="assistant.a1">El modelo XGBoost ha emitido señal <strong style="color:#d4a44d;">HOLD</strong> para los 7 ETFs. Causas principales según SHAP: VIX en zona 22.4 (umbral de "Alerta"), caída del EUR/USD del 1.8 % en 5 días y retorno rolling negativo en CS1.PA (−2.3 %). El sistema prioriza preservación frente a momentum bajista confirmado.</div>
+        </div>
+        <div class="chat-msg user">
+          <span class="lbl" data-i18n="assistant.lbl.user">Usuario</span>
+          <div class="bub" data-i18n="assistant.q2">¿Qué exposición tenemos a tecnología?</div>
+        </div>
+        <div class="chat-msg bot">
+          <span class="lbl" data-i18n="assistant.lbl.bot">InvestBot AI</span>
+          <div class="bub" data-i18n="assistant.a2">Actualmente 0 % invertido (cash). Cuando el modelo reactive posiciones, la exposición tech estimada será ~34 % vía CS1.PA (S&amp;P500, ~28 % tech) y VWRL (~18 % tech global), según composición sectorial de JustETF.</div>
+        </div>
+      </div>
+    </div>
+  </div>
 </section>
 
-<!-- INFORME SEMANAL -->
-<section id="informe" class="section">
-    <div class="section-header">
-        <h2 data-i18n="report.h2">Informe Semanal Automatizado</h2>
-        <p class="subtitle" data-i18n="report.subtitle">Cada semana el sistema genera un informe HTML autocontenido con toda la información necesaria para tomar la decisión de inversión.</p>
+<!-- ════════ REPORT + GALLERY ════════ -->
+<section class="section" id="report">
+  <div class="section-head">
+    <div class="section-num">§ 08 / 08</div>
+    <div>
+      <h2 data-i18n-html="report.h2">Informe semanal<br>+ interfaz Streamlit.</h2>
+      <p class="lede" data-i18n="report.lede">Cada lunes el sistema genera un informe HTML autocontenido exportable a PDF. El dashboard interactivo permite explorar predicciones, escenarios y composición de cartera.</p>
     </div>
-    <div class="grid-2" style="align-items:center;">
-        <div class="card">
-            <div style="display:inline-block;background:#ecfdf5;color:#047857;font-size:0.8rem;font-weight:700;padding:4px 12px;border-radius:20px;margin-bottom:15px;" data-i18n="report.badge">📄 Funcionalidad de Producción</div>
-            <h3 style="margin-top:0;" data-i18n="report.h3">¿Qué incluye el informe?</h3>
-            <p data-i18n-html="report.p">Exportable directamente a PDF desde el navegador, generado por <code>weekly_report.py</code> como HTML inline con estilos para impresión.</p>
-            <ul style="line-height:2;margin:0;padding-left:20px;color:var(--text);">
-                <li data-i18n="report.li1">📈 Señales XGBoost — qué ETFs comprar, cuáles evitar</li>
-                <li data-i18n="report.li2">⚖️ Asignación de capital sugerida por estrategia</li>
-                <li data-i18n="report.li3">🧠 Top 3 razones SHAP de cada predicción en texto legible</li>
-                <li data-i18n="report.li4">📊 Comparativa rendimiento vs semana anterior</li>
-                <li data-i18n="report.li5">🔍 Trazabilidad del modelo (versión, fecha de entreno, métricas)</li>
-            </ul>
+  </div>
+
+  <div class="grid-2" style="align-items:start;margin-bottom:48px;">
+    <div class="card">
+      <h4 data-i18n="report.tag">FUNCIONALIDAD DE PRODUCCIÓN</h4>
+      <h3 data-i18n="report.h3">¿Qué incluye el informe?</h3>
+      <p style="color:var(--ink-soft);font-size:0.93rem;" data-i18n-html="report.p">Generado por <code>weekly_report.py</code> como HTML con estilos para impresión, exportable a PDF directamente desde el navegador.</p>
+      <ul style="line-height:1.9;padding-left:18px;font-size:0.92rem;color:var(--ink-soft);margin-top:10px;">
+        <li data-i18n="report.li1">Señales XGBoost — qué ETFs comprar, cuáles evitar</li>
+        <li data-i18n="report.li2">Asignación de capital sugerida por estrategia</li>
+        <li data-i18n="report.li3">Top 3 razones SHAP de cada predicción en texto legible</li>
+        <li data-i18n="report.li4">Comparativa de rendimiento vs. semana anterior</li>
+        <li data-i18n="report.li5">Trazabilidad del modelo (versión, fecha de entreno, métricas)</li>
+      </ul>
+    </div>
+    <div class="report-illu">
+      <div class="report-row dark"></div>
+      <div class="report-row mid"></div>
+      <div class="report-row short"></div>
+      <div style="margin-top:8px;display:grid;grid-template-columns:repeat(3,1fr);gap:8px;">
+        <div class="card flat" style="padding:10px;text-align:center;">
+          <div style="font-family:var(--mono);font-size:0.62rem;color:var(--ink-mute);">SIGNAL</div>
+          <div style="font-family:var(--serif);font-size:1.3rem;color:var(--accent-ink);font-weight:500;">BUY</div>
         </div>
-    </div>
-</section>
-
-<!-- GALERIA -->
-<section id="galeria" class="section">
-    <div class="section-header">
-        <h2 data-i18n="gallery.h2">Interfaz de la Plataforma (Streamlit)</h2>
-        <p class="subtitle" data-i18n="gallery.subtitle">Capturas del dashboard interactivo construido con Streamlit.</p>
-    </div>
-    <div class="gallery-grid">
-            <div class="img-wrapper"><img src="https://raw.githubusercontent.com/luisrodriguezlopez96/InvestBot-AI-public/main/screenshot-home.png" alt="Dashboard Principal - Señales semanales" loading="lazy"></div>
-            <div class="img-wrapper"><img src="https://raw.githubusercontent.com/luisrodriguezlopez96/InvestBot-AI-public/main/screenshot-cartera.png" alt="Gestión de Cartera y Rebalanceo" loading="lazy"></div>
-            <div class="img-wrapper"><img src="https://raw.githubusercontent.com/luisrodriguezlopez96/InvestBot-AI-public/main/screenshot-shap.png" alt="Análisis SHAP por Predicción" loading="lazy"></div>
-            <div class="img-wrapper"><img src="https://raw.githubusercontent.com/luisrodriguezlopez96/InvestBot-AI-public/main/screenshot-escenarios.png" alt="Análisis de Escenarios y Stress-test" loading="lazy"></div>    </div>
-</section>
-
-<!-- SOBRE EL AUTOR Y CONTACTO -->
-<section id="autor" class="section">
-    <div class="section-header">
-        <h2 data-i18n="author.h2">Sobre el Autor y la Motivación del Proyecto</h2>
-    </div>
-    <div class="card author-section">
-        <img src="https://github.com/luisrodriguezlopez96.png" data-i18n-attr="alt:author.img.alt" alt="Foto de Luis Rodríguez López" class="author-img">
-        <div class="author-text">
-            <p data-i18n="author.p1">InvestBot-AI nace de una frustración común: la brecha entre la información financiera que consumimos a diario y la experiencia real necesaria para interpretarla. Como lector habitual de prensa económica, me encontraba constantemente ante análisis técnicos que parecían más un arte reservado a unos pocos que una ciencia reproducible.</p>
-            <p style="margin-top: 15px;" data-i18n="author.p2">Mi formación como ingeniero —orientada a sistemas, procesos y resultados medibles— y mi especialización en Data Science me llevaron a plantear una hipótesis clara: ¿es posible reemplazar la interpretación humana, frecuentemente subjetiva e inconsistente, por un sistema cuantitativo, disciplinado y basado exclusivamente en evidencia empírica?</p>
-            <p style="margin-top: 15px;" data-i18n-html="author.p3">Este proyecto es mi respuesta. La investigación demostró que, si bien predecir eventos exógenos es imposible, sí es posible modelar el riesgo de mercado con rigor estadístico. Por ello, la filosofía de InvestBot-AI no reside en perseguir rentabilidades extraordinarias, sino en su capacidad para <strong>proteger el capital</strong>, sabiendo cuándo es momento de dar un paso al lado y esperar.</p>
-
-            <div class="cta-group" style="margin-top: 30px; justify-content: start;">
-                <a href="https://www.linkedin.com/in/luisrodriguezlopez96/" target="_blank" rel="noopener" class="btn btn-linkedin">
-                    <svg viewBox="0 0 24 24"><path d="M20.447 20.452h-3.554v-5.569c0-1.328-.027-3.037-1.852-3.037-1.853 0-2.136 1.445-2.136 2.939v5.667H9.351V9h3.414v1.561h.046c.477-.9 1.637-1.85 3.37-1.85 3.601 0 4.267 2.37 4.267 5.455v6.286zM5.337 7.433a2.062 2.062 0 01-2.063-2.065 2.064 2.064 0 112.063 2.065zm1.782 13.019H3.555V9h3.564v11.452zM22.225 0H1.771C.792 0 0 .774 0 1.729v20.542C0 23.227.792 24 1.771 24h20.451C23.2 24 24 23.227 24 22.271V1.729C24 .774 23.2 0 22.222 0h.003z"/></svg>
-                    <span data-i18n="author.btn.linkedin">Conectar en LinkedIn</span>
-                </a>
-                <a href="https://github.com/luisrodriguezlopez96/InvestBot-AI-public" target="_blank" rel="noopener" class="btn btn-github">
-                    <svg viewBox="0 0 24 24"><path d="M12 .297c-6.63 0-12 5.373-12 12 0 5.303 3.438 9.8 8.205 11.385.6.113.82-.258.82-.577 0-.285-.01-1.04-.015-2.04-3.338.724-4.042-1.61-4.042-1.61C4.422 18.07 3.633 17.7 3.633 17.7c-1.087-.744.084-.729.084-.729 1.205.084 1.838 1.236 1.838 1.236 1.07 1.835 2.809 1.305 3.495.998.108-.776.417-1.305.76-1.605-2.665-.3-5.466-1.332-5.466-5.93 0-1.31.465-2.38 1.235-3.22-.135-.303-.54-1.523.105-3.176 0 0 1.005-.322 3.3 1.23.96-.267 1.98-.399 3-.405 1.02.006 2.04.138 3 .405 2.28-1.552 3.285-1.23 3.285-1.23.645 1.653.24 2.873.12 3.176.765.84 1.23 1.91 1.23 3.22 0 4.61-2.805 5.625-5.475 5.92.42.36.81 1.096.81 2.22 0 1.606-.015 2.896-.015 3.286 0 .315.21.69.825.57C20.565 22.092 24 17.592 24 12.297c0-6.627-5.373-12-12-12"/></svg>
-                    <span data-i18n="author.btn.github">Ver Repositorio</span>
-                </a>
-            </div>
+        <div class="card flat" style="padding:10px;text-align:center;">
+          <div style="font-family:var(--mono);font-size:0.62rem;color:var(--ink-mute);">CASH</div>
+          <div style="font-family:var(--serif);font-size:1.3rem;font-weight:500;">42 %</div>
         </div>
+        <div class="card flat" style="padding:10px;text-align:center;">
+          <div style="font-family:var(--mono);font-size:0.62rem;color:var(--ink-mute);">VIX</div>
+          <div style="font-family:var(--serif);font-size:1.3rem;font-weight:500;">18.2</div>
+        </div>
+      </div>
+      <div class="report-chart">
+        <div class="report-bar" style="height:35%"></div>
+        <div class="report-bar" style="height:55%"></div>
+        <div class="report-bar muted" style="height:25%"></div>
+        <div class="report-bar" style="height:75%"></div>
+        <div class="report-bar muted" style="height:40%"></div>
+        <div class="report-bar" style="height:90%"></div>
+        <div class="report-bar muted" style="height:30%"></div>
+      </div>
     </div>
+  </div>
+
+  <h3 style="margin-bottom:18px;" data-i18n="gallery.h3">Capturas del dashboard Streamlit</h3>
+  <div class="gallery">
+  <div class="shot">
+    <div class="shot-bar"><span class="d"></span><span class="d"></span><span class="d"></span></div>
+    <div class="shot-body">
+      <div>
+        <div class="meta">HOME</div>
+        <div class="title" data-i18n="shot1.title">Dashboard principal — señales semanales</div>
+      </div>
+      <img src="https://raw.githubusercontent.com/luisrodriguezlopez96/InvestBot-AI-public/main/screenshot-home.png" 
+           alt="Dashboard Principal" 
+           style="width:100%;height:auto;border-radius:6px;margin-top:14px;border:1px solid var(--rule);" 
+           loading="lazy">
+    </div>
+  </div>
+
+  <div class="shot">
+    <div class="shot-bar"><span class="d"></span><span class="d"></span><span class="d"></span></div>
+    <div class="shot-body">
+      <div>
+        <div class="meta">PORTFOLIO</div>
+        <div class="title" data-i18n="shot2.title">Gestión de cartera y rebalanceo</div>
+      </div>
+      <img src="https://raw.githubusercontent.com/luisrodriguezlopez96/InvestBot-AI-public/main/screenshot-cartera.png" 
+           alt="Gestión de Cartera" 
+           style="width:100%;height:auto;border-radius:6px;margin-top:14px;border:1px solid var(--rule);" 
+           loading="lazy">
+    </div>
+  </div>
+
+  <div class="shot">
+    <div class="shot-bar"><span class="d"></span><span class="d"></span><span class="d"></span></div>
+    <div class="shot-body">
+      <div>
+        <div class="meta">SHAP</div>
+        <div class="title" data-i18n="shot3.title">Análisis SHAP por predicción</div>
+      </div>
+      <img src="https://raw.githubusercontent.com/luisrodriguezlopez96/InvestBot-AI-public/main/screenshot-shap.png" 
+           alt="Análisis SHAP" 
+           style="width:100%;height:auto;border-radius:6px;margin-top:14px;border:1px solid var(--rule);" 
+           loading="lazy">
+    </div>
+  </div>
+
+  <div class="shot">
+    <div class="shot-bar"><span class="d"></span><span class="d"></span><span class="d"></span></div>
+    <div class="shot-body">
+      <div>
+        <div class="meta">SCENARIOS</div>
+        <div class="title" data-i18n="shot4.title">Análisis de escenarios y stress-test</div>
+      </div>
+      <img src="https://raw.githubusercontent.com/luisrodriguezlopez96/InvestBot-AI-public/main/screenshot-escenarios.png" 
+           alt="Análisis de Escenarios" 
+           style="width:100%;height:auto;border-radius:6px;margin-top:14px;border:1px solid var(--rule);" 
+           loading="lazy">
+    </div>
+  </div>
+</div>
+  
 </section>
 
-<!-- FOOTER -->
+<!-- ════════ FAQ ════════ -->
+<section class="section" id="faq">
+  <div class="section-head">
+    <div class="section-num">FAQ</div>
+    <div>
+      <h2 data-i18n="faq.h2">Preguntas frecuentes.</h2>
+      <p class="lede" data-i18n="faq.lede">Las dudas honestas que cualquier evaluador académico o profesional financiero formularía ante este proyecto.</p>
+    </div>
+  </div>
+
+  <div class="faq">
+    <details class="faq-item">
+      <summary data-i18n="faq.q1">¿Por qué los resultados no son aún mejores?</summary>
+      <div class="answer" data-i18n="faq.a1">Porque el sistema fue diseñado con honestidad. No hay look-ahead bias, no hay cherry-picking del período de test, no hay fricciones omitidas. Un +2.1 % en un mercado que cae −19.2 % representa más de 21 puntos porcentuales de alpha — un resultado significativo precisamente porque la metodología no admite trampas.</div>
+    </details>
+    <details class="faq-item">
+      <summary data-i18n="faq.q2">¿Funcionará igual en el futuro?</summary>
+      <div class="answer" data-i18n="faq.a2">No hay garantía. Los modelos cuantitativos son válidos mientras el régimen de mercado se asemeje al período de entrenamiento. Por eso el sistema incluye SHAP — para detectar cuándo las features dominantes cambian y el modelo necesita reentrenarse.</div>
+    </details>
+    <details class="faq-item">
+      <summary data-i18n="faq.q3">¿Por qué no añadir noticias o sentimiento de redes sociales?</summary>
+      <div class="answer" data-i18n="faq.a3">Tres razones: (1) calidad de datos limitada y sesgada en feeds gratuitos; (2) elevado coste computacional para procesar texto en tiempo real localmente; (3) decisión metodológica — un sistema cuantitativo robusto debe asumir su ceguera ante shocks políticos y compensarla con gestión de riesgo, no con más features ruidosas.</div>
+    </details>
+    <details class="faq-item">
+      <summary data-i18n="faq.q4">¿Por qué Ollama local en vez de GPT-4 o Claude?</summary>
+      <div class="answer" data-i18n="faq.a4">Privacidad y reproducibilidad. Los datos de cartera personal no deben enviarse a APIs externas. Además, el sistema necesita ser reproducible al evaluar el TFM — una API cloud podría devolver respuestas distintas con el tiempo. llama3.2:3b corre en CPU en cualquier portátil moderno.</div>
+    </details>
+    <details class="faq-item">
+      <summary data-i18n="faq.q5">¿Es esto asesoramiento financiero?</summary>
+      <div class="answer" data-i18n="faq.a5">No. Es un trabajo académico con fines de investigación. Los resultados son simulaciones históricas. La inversión real conlleva riesgos y requiere asesoramiento profesional regulado.</div>
+    </details>
+    <details class="faq-item">
+      <summary data-i18n="faq.q6">¿Por qué el repositorio es privado?</summary>
+      <div class="answer" data-i18n="faq.a6">Las normativas del TFM exigen confidencialidad del código hasta la defensa. Esta página funciona como showcase técnico mientras tanto. Tras la defensa el repositorio se hará público.</div>
+    </details>
+  </div>
+</section>
+
+<!-- ════════ AUTHOR ════════ -->
+<section class="section" id="author">
+  <div class="section-head">
+    <div class="section-num" data-i18n="author.num">AUTOR</div>
+    <div>
+      <h2 data-i18n-html="author.h2">Sobre el autor<br>y la motivación del proyecto.</h2>
+    </div>
+  </div>
+
+  <div class="author">
+    <img class="author-img" src="https://github.com/luisrodriguezlopez96.png" alt="Luis Rodríguez López" loading="lazy" onerror="this.style.background='var(--paper-2)';this.style.display='block';">
+    <div class="author-text">
+      <p data-i18n="author.p1">InvestBot-AI nace de una frustración común: la brecha entre la información financiera que consumimos a diario y la experiencia real necesaria para interpretarla. Como lector habitual de prensa económica, me encontraba ante análisis técnicos que parecían más un arte reservado a unos pocos que una ciencia reproducible.</p>
+      <p data-i18n="author.p2">Mi formación como ingeniero —orientada a sistemas, procesos y resultados medibles— y mi especialización en Data Science me llevaron a una hipótesis clara: ¿es posible reemplazar la interpretación humana, frecuentemente subjetiva e inconsistente, por un sistema cuantitativo, disciplinado y basado exclusivamente en evidencia empírica?</p>
+      <p data-i18n-html="author.p3">Este proyecto es mi respuesta. La investigación demostró que, si bien predecir eventos exógenos es imposible, sí es posible modelar el riesgo de mercado con rigor estadístico. La filosofía de InvestBot-AI no reside en perseguir rentabilidades extraordinarias, sino en su capacidad para <strong>proteger el capital</strong>, sabiendo cuándo dar un paso al lado y esperar.</p>
+
+      <div class="cta-row" style="margin-top:24px;">
+        <a href="https://www.linkedin.com/in/luisrodriguezlopez96/" target="_blank" rel="noopener" class="btn btn-primary">
+          <svg viewBox="0 0 24 24"><path d="M20.447 20.452h-3.554v-5.569c0-1.328-.027-3.037-1.852-3.037-1.853 0-2.136 1.445-2.136 2.939v5.667H9.351V9h3.414v1.561h.046c.477-.9 1.637-1.85 3.37-1.85 3.601 0 4.267 2.37 4.267 5.455v6.286zM5.337 7.433a2.062 2.062 0 01-2.063-2.065 2.064 2.064 0 112.063 2.065zm1.782 13.019H3.555V9h3.564v11.452zM22.225 0H1.771C.792 0 0 .774 0 1.729v20.542C0 23.227.792 24 1.771 24h20.451C23.2 24 24 23.227 24 22.271V1.729C24 .774 23.2 0 22.222 0h.003z"/></svg>
+          <span data-i18n="author.btn1">Conectar en LinkedIn</span>
+        </a>
+        <a href="https://github.com/luisrodriguezlopez96/InvestBot-AI-public" target="_blank" rel="noopener" class="btn btn-secondary">
+          <svg viewBox="0 0 24 24"><path d="M12 .297c-6.63 0-12 5.373-12 12 0 5.303 3.438 9.8 8.205 11.385.6.113.82-.258.82-.577 0-.285-.01-1.04-.015-2.04-3.338.724-4.042-1.61-4.042-1.61C4.422 18.07 3.633 17.7 3.633 17.7c-1.087-.744.084-.729.084-.729 1.205.084 1.838 1.236 1.838 1.236 1.07 1.835 2.809 1.305 3.495.998.108-.776.417-1.305.76-1.605-2.665-.3-5.466-1.332-5.466-5.93 0-1.31.465-2.38 1.235-3.22-.135-.303-.54-1.523.105-3.176 0 0 1.005-.322 3.3 1.23.96-.267 1.98-.399 3-.405 1.02.006 2.04.138 3 .405 2.28-1.552 3.285-1.23 3.285-1.23.645 1.653.24 2.873.12 3.176.765.84 1.23 1.91 1.23 3.22 0 4.61-2.805 5.625-5.475 5.92.42.36.81 1.096.81 2.22 0 1.606-.015 2.896-.015 3.286 0 .315.21.69.825.57C20.565 22.092 24 17.592 24 12.297c0-6.627-5.373-12-12-12"/></svg>
+          <span data-i18n="author.btn2">Ver repositorio</span>
+        </a>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ════════ FOOTER ════════ -->
 <footer>
-    <h2 style="color:white;margin-top:0;font-weight:800;">InvestBot-AI</h2>
-    <p data-i18n="footer.subtitle">Un Proyecto Académico de Luis Rodríguez López</p>
-
-    <div style="max-width:800px;margin:30px auto 0;background:rgba(255,255,255,0.05);padding:20px;border-radius:8px;border-left:4px solid var(--warning);text-align:left;font-size:0.85rem;color:#cbd5e1;">
-        <p data-i18n-html="footer.confidential"><strong>⚠️ Aviso de Repositorio Confidencial:</strong> El código fuente modular (scripts Python en <code>src/</code>, modelos, scrapers y configuración del asistente local) se mantiene en un repositorio privado para cumplir las normativas del TFM. Esta página funciona exclusivamente como showcase técnico.</p>
-        <p style="margin-top:10px;opacity:0.8;" data-i18n-html="footer.legal"><strong>Aviso Legal Financiero:</strong> Los resultados mostrados son simulaciones históricas (backtesting). No constituyen asesoramiento financiero, recomendaciones de inversión ni garantía de retornos futuros.</p>
+  <div class="footer-inner">
+    <div class="footer-top">
+      <div>
+        <h3>InvestBot<span style="color:#8a857d;font-weight:400">·AI</span></h3>
+        <p data-i18n="footer.tagline">Un proyecto académico de Luis Rodríguez López. Trabajo de Fin de Máster · 2025/2026.</p>
+        <div class="cta-row" style="margin-top:12px">
+          <a href="https://github.com/luisrodriguezlopez96/InvestBot-AI-public" target="_blank" rel="noopener" class="btn btn-dark-primary">
+            <span data-i18n="footer.btn.repo">→ Repositorio</span>
+          </a>
+          <a href="https://www.linkedin.com/in/luisrodriguezlopez96/" target="_blank" rel="noopener" class="btn btn-dark-secondary">
+            <span data-i18n="footer.btn.linkedin">LinkedIn</span>
+          </a>
+        </div>
+      </div>
+      <div>
+        <h4 style="color:#8a857d;" data-i18n="footer.nav.title">Navegación</h4>
+        <div style="display:flex;flex-direction:column;gap:8px;font-size:0.86rem;">
+          <a href="#results" style="color:#c8c2b6;text-decoration:none" data-i18n="footer.nav.results">Resultados</a>
+          <a href="#how" style="color:#c8c2b6;text-decoration:none" data-i18n="footer.nav.how">Cómo funciona</a>
+          <a href="#architecture" style="color:#c8c2b6;text-decoration:none" data-i18n="footer.nav.architecture">Arquitectura</a>
+          <a href="#xai" style="color:#c8c2b6;text-decoration:none" data-i18n="footer.nav.xai">Explicabilidad</a>
+          <a href="#faq" style="color:#c8c2b6;text-decoration:none" data-i18n="footer.nav.faq">FAQ</a>
+        </div>
+      </div>
     </div>
+
+    <div class="footer-disclaimer">
+      <p data-i18n-html="footer.disclaimer1"><strong>⚠ Aviso de repositorio confidencial:</strong> el código fuente modular (módulos Python en <code>src/</code>, modelos, scrapers y configuración del asistente local) se mantiene en repositorio privado para cumplir las normativas del TFM. Esta página funciona exclusivamente como showcase técnico.</p>
+      <p data-i18n-html="footer.disclaimer2"><strong>Aviso legal financiero:</strong> los resultados mostrados son simulaciones históricas (backtesting). No constituyen asesoramiento financiero, recomendaciones de inversión ni garantía de retornos futuros.</p>
+    </div>
+
+    <div class="footer-bottom">
+      <span>© 2026 LUIS RODRÍGUEZ LÓPEZ</span>
+      <span data-i18n="footer.built">CONSTRUIDO CON PYTHON · XGBOOST · OLLAMA · STREAMLIT</span>
+    </div>
+  </div>
 </footer>
 
+<!-- ════════ I18N ════════ -->
 <script>
-    // ── TRANSLATIONS ──────────────────────────────────────────────────────────
-    const translations = {
-        es: {
-            'nav.results': 'Resultados',
-            'nav.architecture': 'Arquitectura',
-            'nav.rigor': 'Rigor',
-            'nav.xai': 'XAI & SHAP',
-            'nav.chatbot': 'Asistente IA',
-            'nav.report': 'Informe',
-            'nav.ui': 'UI',
-            'nav.author': 'Sobre el Autor',
-            'hero.badge.tfm': '🎓 Trabajo de Fin de Máster 2025/2026',
-            'hero.badge.private': '🔒 Repositorio Privado (Código Confidencial)',
-            'hero.tagline': 'Optimización de Carteras con ML Explicable',
-            'hero.description': 'Una plataforma que recopila datos de mercado en tiempo real, los analiza con modelos de Machine Learning y te indica <strong>cuándo invertir, en qué ETFs y cuánto peso darle a cada uno</strong> — todo explicado en lenguaje natural por un asistente IA.',
-            'hero.btn.linkedin': 'LinkedIn',
-            'hero.btn.github': 'Repositorio Público',
-            'metric.alpha.label': 'Alpha sobre el mercado',
-            'metric.alpha.sub': 'Capital adicional vs. B&H',
-            'metric.accuracy.label': 'Acierto Direccional',
-            'metric.accuracy.sub': '6 de cada 10 predicciones correctas',
-            'metric.gain.label': 'Ganancia real',
-            'metric.gain.sub': 'vs. -19.2% del mercado',
-            'results.h2': 'Resultados de Backtesting Realista',
-            'results.subtitle': 'Simulación de inversión en el período Dic. 2023 – Dic. 2025 con todas las fricciones del mundo real.',
-            'results.rules.h3': 'Reglas de la Simulación',
-            'results.rules.capital': '💰 <strong>Capital de partida:</strong> 10.000€',
-            'results.rules.contribution': '🔄 <strong>Aportación periódica:</strong> +100€ cada semana (Total aportado: 19.700€)',
-            'results.rules.fees': '💸 <strong>Comisiones reales:</strong> 0.1% por cada ajuste de la cartera',
-            'results.rules.limit': '⚖️ <strong>Límite de concentración:</strong> Máximo 40% en un solo ETF',
-            'results.table.strategy': 'Estrategia',
-            'results.table.result': 'Resultado',
-            'results.table.final': 'Dinero final',
-            'results.bnh.name': 'Comprar y Esperar (Buy & Hold)',
-            'results.markowitz.name': 'Fórmula Clásica (Markowitz)',
-            'results.note': 'De 19.700€ aportados, InvestBot devolvió 20.121€. Las otras dos estrategias perdieron dinero en el mismo período.',
-            'results.key': '💡 <strong>La Clave:</strong> Cuando el mercado caía, InvestBot movía el dinero a efectivo. Las otras estrategias se quedaron dentro y sufrieron las pérdidas. El valor del sistema fue saber cuándo no invertir, protegiendo el capital en el 59% de las semanas.',
-            'arch.h2': 'Arquitectura e Ingesta Multi-Fuente',
-            'arch.subtitle': 'Un sistema desacoplado listo para producción, más allá de los notebooks exploratorios.',
-            'arch.prod.h3': 'Software de Producción',
-            'arch.prod.p1': 'El proyecto separa la investigación (Jupyter Notebooks) de la lógica de negocio (Python Modules en <code>src/</code>).',
-            'arch.prod.p2': 'Los datos cuantitativos se guardan en <strong>Parquet</strong> para máxima eficiencia, mientras que el historial de operaciones y el estado de la cartera se persisten en una base de datos <strong>SQLite</strong>.',
-            'source1.num': 'Fuente 1',
-            'source1.desc': 'Precios OHLCV diarios para 7 ETFs + VIX + EUR/USD. Base del entrenamiento XGBoost.',
-            'source2.num': 'Fuente 2',
-            'source2.desc': 'Extracción de holdings, distribución geográfica y sectorial de cada ETF con BeautifulSoup4.',
-            'source3.num': 'Fuente 3',
-            'source3.desc': 'Calendario económico y sentimiento técnico. Usados para enriquecer el dashboard, no inyectados en el modelo (robustez del pipeline).',
-            'arch.design': '🔩 <strong>Decisión de Diseño:</strong> Los datos de scraping enriquecen el dashboard y el asistente conversacional, pero <strong>no se inyectan en el modelo XGBoost</strong>. Esto garantiza que el pipeline de predicción no dependa de la estabilidad del HTML de terceros y mantiene el 100% de reproducibilidad académica.',
-            'rigor.h2': 'Rigor Académico y Honestidad',
-            'rigor.subtitle': 'El sistema fue diseñado sin trampas y es transparente sobre sus limitaciones.',
-            'rigor.nodata.h3': '🛡️ Sin Trampas en los Datos',
-            'rigor.nodata.p': 'El modelo se entrenó con datos de 2019 a 2023, y se verificó con los datos de 2024-2025, que nunca había visto. Es como estudiar con libros viejos y aprobar un examen con preguntas nuevas.',
-            'rigor.patterns.h3': '⚙️ Aprende Patrones, no Memoriza',
-            'rigor.patterns.p': 'Se tomaron precauciones técnicas (análogas a <em>Dropout</em> en redes neuronales) para evitar que el modelo simplemente "memorizara" el pasado, asegurando que aprenda reglas generalizables.',
-            'rigor.limits.h3': '⚠️ Lo que la IA no Puede Predecir',
-            'rigor.limits.p': 'Ningún modelo puede anticipar noticias inesperadas. En abril de 2025, los aranceles de EE.UU. provocaron una caída que el sistema no vio venir. Esta herramienta ayuda a invertir mejor, no a adivinar el futuro.',
-            'rigor.features.h3': '📐 Las 11 Features del Modelo — Justificación Teórica',
-            'rigor.features.p': 'Cada variable fue seleccionada con base en teoría financiera, no por búsqueda exhaustiva. Esto es una garantía adicional contra el overfitting por selección de variables.',
-            'rigor.table.feature': 'Feature',
-            'rigor.table.type': 'Tipo',
-            'rigor.table.justification': 'Justificación Financiera',
-            'rigor.f1.justification': 'Captura el efecto momentum a corto y medio plazo (Jegadeesh & Titman, 1993)',
-            'rigor.f2.justification': 'RSI >70 señala sobrecompra; <30 señala potencial rebote (mean-reversion)',
-            'rigor.f3.justification': 'Volatilidad realizada como proxy de incertidumbre y régimen de mercado',
-            'rigor.f4.justification': 'Precio relativo a media móvil 50d: por encima = tendencia alcista confirmada',
-            'rigor.f5.justification': 'Posición dentro de Bandas de Bollinger: extremos indican reversión estadística',
-            'rigor.f6.justification': 'VIX elevado reduce apetito por riesgo global; cambio en 5d captura giros de régimen',
-            'rigor.f7.justification': 'EUR/USD afecta la rentabilidad en EUR de activos denominados en USD (efecto divisa)',
-            'rigor.features.note': 'Las features macro (fondo azul) resultaron ser las más predictivas según el análisis SHAP, superando a los indicadores técnicos del ETF individual.',
-            'xai.h2': 'Explicabilidad del Modelo (XAI)',
-            'xai.subtitle': 'El modelo no es una caja negra. Cada predicción tiene una razón cuantificable.',
-            'xai.what.h3': '¿Qué Mueve Realmente los Mercados?',
-            'xai.what.p': 'El análisis SHAP (SHapley Additive exPlanations) sobre el conjunto de test reveló que las <strong>señales macroeconómicas dominan sobre los indicadores técnicos individuales</strong> de cada ETF:',
-            'xai.shap.label1': 'Cambio EUR/USD 5d',
-            'xai.shap.label2': 'Cambio VIX 5d',
-            'xai.shap.label3': 'Nivel EUR/USD',
-            'xai.shap.label4': 'RSI-14',
-            'xai.shap.label5': 'Volatilidad 21d',
-            'xai.conclusion': 'Conclusión: el modelo aprendió que los ETFs europeos se mueven por el ciclo macro (tipo de cambio y miedo global), no por el momentum técnico individual de cada activo.',
-            'xai.case.h3': '⚠️ Caso Real: Liberation Day (Abril 2025)',
-            'xai.case.p': 'El análisis waterfall del ETF <strong>XAIX.MI</strong> (Xtrackers AI & Big Data) el 10 de abril de 2025 es el ejemplo más honesto del sistema: el modelo predijo una subida basándose en un EUR/USD favorable y VIX moderado. El mercado cayó por los aranceles de Trump.',
-            'xai.case.lesson': '<strong>Lección académica:</strong> Un modelo cuantitativo es ciego a información política no descontada en el precio. La forma correcta de gestionar esto no es mejorar el modelo, sino diseñar un sistema de gestión de riesgo que limite la exposición ante alta incertidumbre — exactamente lo que hace la regla de liquidez del sistema.',
-            'xai.prod.h3': 'SHAP en Producción',
-            'xai.prod.p': 'El módulo <code>src/investbot_ai/xai/shap_explainer.py</code> genera explicaciones en tiempo real. Cada semana, el informe automático incluye las <strong>top 3 razones SHAP</strong> de cada predicción en lenguaje legible para el usuario final.',
-            'xai.prod.example': 'Ejemplo: <em>"La predicción positiva para EUNL.DE se debe principalmente a: (1) EUR/USD bajó un 1.2% esta semana — históricamente positivo para exportadoras europeas, (2) VIX por debajo de 18 — régimen de baja volatilidad."</em>',
-            'chatbot.h2': 'Asistente Financiero IA Local',
-            'chatbot.subtitle': 'Privacidad por diseño: los datos de tu cartera nunca salen de tu dispositivo.',
-            'chatbot.badge.local': '🔒 100% Local · Sin APIs Cloud',
-            'chatbot.p1': 'El dashboard integra un asistente financiero conversacional que funciona <strong>100% en local</strong>, sin enviar ningún dato a APIs externas. Construido sobre <strong>Ollama</strong> con el modelo <strong>llama3.2:3b</strong> (seleccionable en runtime), el asistente recibe en cada pregunta el contexto dinámico de la sesión: composición actual de la cartera, pesos por ETF y las predicciones semanales del modelo XGBoost.',
-            'chatbot.p2': 'Esto permite consultas como <em>"¿por qué estoy en liquidez esta semana?"</em> y recibir una respuesta fundamentada en las señales reales del modelo, no en conocimiento genérico. El diseño <strong>local-first</strong> es una decisión deliberada: los datos financieros personales no deben salir del dispositivo del usuario.',
-            'chatbot.impl': '<strong>⚙️ Implementación técnica:</strong> Se usa la API nativa de Ollama con <code>stream=True</code> para respuestas en tiempo real. El contexto dinámico (cartera activa + predicciones XGBoost de la semana + composición ETF desde JustETF) se inyecta directamente en el <em>system prompt</em> de cada petición. Sin LangChain, sin OpenAI — dependencias cero de servicios externos.',
-            'chatbot.pill.panel': 'Panel flotante persistente',
-            'chatbot.mock.title': 'InvestBot · Asistente Local (llama3.2:3b)',
-            'chatbot.label.user': 'Usuario',
-            'chatbot.label.bot': 'InvestBot IA',
-            'chatbot.msg1.user': '¿Por qué estamos en liquidez esta semana?',
-            'chatbot.msg1.bot': 'El modelo XGBoost ha emitido señal <strong style="color:#f59e0b;">HOLD</strong> para los 7 ETFs esta semana. Las causas principales según el análisis SHAP son: VIX en zona 22.4 (umbral de "Alerta"), caída del EUR/USD del 1.8% en 5 días y retorno rolling negativo en CS1.PA (-2.3%). El sistema prioriza la preservación de capital frente a entrar en un mercado con momentum bajista confirmado.',
-            'chatbot.msg2.user': '¿Qué exposición tenemos a tecnología?',
-            'chatbot.msg2.bot': 'Actualmente el 0% de la cartera está invertido (posición en cash). Cuando el modelo reactiva las posiciones, la exposición a tecnología estimada sería del ~34% vía CS1.PA (S&P500, ~28% tech) y VWRL (~18% tech global), según los datos de composición sectorial extraídos de JustETF.',
-            'report.h2': 'Informe Semanal Automatizado',
-            'report.subtitle': 'Cada semana el sistema genera un informe HTML autocontenido con toda la información necesaria para tomar la decisión de inversión.',
-            'report.badge': '📄 Funcionalidad de Producción',
-            'report.h3': '¿Qué incluye el informe?',
-            'report.p': 'Exportable directamente a PDF desde el navegador, generado por <code>weekly_report.py</code> como HTML inline con estilos para impresión.',
-            'report.li1': '📈 Señales XGBoost — qué ETFs comprar, cuáles evitar',
-            'report.li2': '⚖️ Asignación de capital sugerida por estrategia',
-            'report.li3': '🧠 Top 3 razones SHAP de cada predicción en texto legible',
-            'report.li4': '📊 Comparativa rendimiento vs semana anterior',
-            'report.li5': '🔍 Trazabilidad del modelo (versión, fecha de entreno, métricas)',
-            'gallery.h2': 'Interfaz de la Plataforma (Streamlit)',
-            'gallery.subtitle': 'Capturas del dashboard interactivo construido con Streamlit.',
-            'gallery.img1.alt': 'Dashboard Principal',
-            'gallery.img2.alt': 'Gestión de Cartera',
-            'gallery.img3.alt': 'Análisis SHAP',
-            'gallery.img4.alt': 'Análisis de Escenarios',
-            'author.h2': 'Sobre el Autor y la Motivación del Proyecto',
-            'author.p1': 'InvestBot-AI nace de una frustración común: la brecha entre la información financiera que consumimos a diario y la experiencia real necesaria para interpretarla. Como lector habitual de prensa económica, me encontraba constantemente ante análisis técnicos que parecían más un arte reservado a unos pocos que una ciencia reproducible.',
-            'author.p2': 'Mi formación como ingeniero —orientada a sistemas, procesos y resultados medibles— y mi especialización en Data Science me llevaron a plantear una hipótesis clara: ¿es posible reemplazar la interpretación humana, frecuentemente subjetiva e inconsistente, por un sistema cuantitativo, disciplinado y basado exclusivamente en evidencia empírica?',
-            'author.p3': 'Este proyecto es mi respuesta. La investigación demostró que, si bien predecir eventos exógenos es imposible, sí es posible modelar el riesgo de mercado con rigor estadístico. Por ello, la filosofía de InvestBot-AI no reside en perseguir rentabilidades extraordinarias, sino en su capacidad para <strong>proteger el capital</strong>, sabiendo cuándo es momento de dar un paso al lado y esperar.',
-            'author.img.alt': 'Foto de Luis Rodríguez López',
-            'author.btn.linkedin': 'Conectar en LinkedIn',
-            'author.btn.github': 'Ver Repositorio',
-            'footer.subtitle': 'Un Proyecto Académico de Luis Rodríguez López',
-            'footer.confidential': '<strong>⚠️ Aviso de Repositorio Confidencial:</strong> El código fuente modular (scripts Python en <code>src/</code>, modelos, scrapers y configuración del asistente local) se mantiene en un repositorio privado para cumplir las normativas del TFM. Esta página funciona exclusivamente como showcase técnico.',
-            'footer.legal': '<strong>Aviso Legal Financiero:</strong> Los resultados mostrados son simulaciones históricas (backtesting). No constituyen asesoramiento financiero, recomendaciones de inversión ni garantía de retornos futuros.',
-        },
-        en: {
-            'nav.results': 'Results',
-            'nav.architecture': 'Architecture',
-            'nav.rigor': 'Rigor',
-            'nav.xai': 'XAI & SHAP',
-            'nav.chatbot': 'AI Assistant',
-            'nav.report': 'Report',
-            'nav.ui': 'UI',
-            'nav.author': 'About',
-            'hero.badge.tfm': '🎓 Master\'s Thesis 2025/2026',
-            'hero.badge.private': '🔒 Private Repository (Confidential Code)',
-            'hero.tagline': 'Portfolio Optimization with Explainable ML',
-            'hero.description': 'A platform that collects real-time market data, analyzes it with Machine Learning models and tells you <strong>when to invest, in which ETFs and how much weight to give each one</strong> — all explained in natural language by an AI assistant.',
-            'hero.btn.linkedin': 'LinkedIn',
-            'hero.btn.github': 'Public Repository',
-            'metric.alpha.label': 'Alpha over the market',
-            'metric.alpha.sub': 'Additional capital vs. B&H',
-            'metric.accuracy.label': 'Directional Accuracy',
-            'metric.accuracy.sub': '6 out of 10 predictions correct',
-            'metric.gain.label': 'Real return',
-            'metric.gain.sub': 'vs. -19.2% of the market',
-            'results.h2': 'Realistic Backtesting Results',
-            'results.subtitle': 'Investment simulation for the period Dec. 2023 – Dec. 2025 with all real-world frictions.',
-            'results.rules.h3': 'Simulation Rules',
-            'results.rules.capital': '💰 <strong>Starting capital:</strong> €10,000',
-            'results.rules.contribution': '🔄 <strong>Periodic contribution:</strong> +€100 every week (Total contributed: €19,700)',
-            'results.rules.fees': '💸 <strong>Real commissions:</strong> 0.1% per portfolio rebalance',
-            'results.rules.limit': '⚖️ <strong>Concentration limit:</strong> Maximum 40% in a single ETF',
-            'results.table.strategy': 'Strategy',
-            'results.table.result': 'Result',
-            'results.table.final': 'Final amount',
-            'results.bnh.name': 'Buy & Hold',
-            'results.markowitz.name': 'Classic Formula (Markowitz)',
-            'results.note': 'From €19,700 contributed, InvestBot returned €20,121. The other two strategies lost money in the same period.',
-            'results.key': '💡 <strong>The Key:</strong> When the market fell, InvestBot moved funds to cash. The other strategies stayed in and suffered losses. The value of the system was knowing when NOT to invest, protecting capital in 59% of the weeks.',
-            'arch.h2': 'Architecture & Multi-Source Ingestion',
-            'arch.subtitle': 'A decoupled, production-ready system that goes beyond exploratory notebooks.',
-            'arch.prod.h3': 'Production Software',
-            'arch.prod.p1': 'The project separates research (Jupyter Notebooks) from business logic (Python Modules in <code>src/</code>).',
-            'arch.prod.p2': 'Quantitative data is stored in <strong>Parquet</strong> for maximum efficiency, while the trade history and portfolio state are persisted in a <strong>SQLite</strong> database.',
-            'source1.num': 'Source 1',
-            'source1.desc': 'Daily OHLCV prices for 7 ETFs + VIX + EUR/USD. XGBoost training backbone.',
-            'source2.num': 'Source 2',
-            'source2.desc': 'Holdings extraction, geographic and sector distribution of each ETF using BeautifulSoup4.',
-            'source3.num': 'Source 3',
-            'source3.desc': 'Economic calendar and technical sentiment. Used to enrich the dashboard, not injected into the model (pipeline robustness).',
-            'arch.design': '🔩 <strong>Design Decision:</strong> Scraped data enriches the dashboard and the conversational assistant, but is <strong>not injected into the XGBoost model</strong>. This ensures the prediction pipeline does not depend on the stability of third-party HTML and maintains 100% academic reproducibility.',
-            'rigor.h2': 'Academic Rigor & Honesty',
-            'rigor.subtitle': 'The system was designed without shortcuts and is transparent about its limitations.',
-            'rigor.nodata.h3': '🛡️ No Data Leakage',
-            'rigor.nodata.p': 'The model was trained on data from 2019 to 2023, and validated on 2024-2025 data it had never seen. It\'s like studying with old books and passing an exam with brand-new questions.',
-            'rigor.patterns.h3': '⚙️ Learns Patterns, Doesn\'t Memorize',
-            'rigor.patterns.p': 'Technical precautions were taken (analogous to <em>Dropout</em> in neural networks) to prevent the model from simply "memorizing" the past, ensuring it learns generalizable rules.',
-            'rigor.limits.h3': '⚠️ What AI Cannot Predict',
-            'rigor.limits.p': 'No model can anticipate unexpected news. In April 2025, US tariffs triggered a drop the system didn\'t see coming. This tool helps invest better, not predict the future.',
-            'rigor.features.h3': '📐 The 11 Model Features — Theoretical Justification',
-            'rigor.features.p': 'Each variable was selected based on financial theory, not exhaustive search. This is an additional safeguard against overfitting by variable selection.',
-            'rigor.table.feature': 'Feature',
-            'rigor.table.type': 'Type',
-            'rigor.table.justification': 'Financial Justification',
-            'rigor.f1.justification': 'Captures short and medium-term momentum effect (Jegadeesh & Titman, 1993)',
-            'rigor.f2.justification': 'RSI >70 signals overbought; <30 signals potential bounce (mean-reversion)',
-            'rigor.f3.justification': 'Realized volatility as a proxy for uncertainty and market regime',
-            'rigor.f4.justification': 'Price relative to 50d moving average: above = confirmed uptrend',
-            'rigor.f5.justification': 'Position within Bollinger Bands: extremes indicate statistical reversion',
-            'rigor.f6.justification': 'High VIX reduces global risk appetite; 5d change captures regime shifts',
-            'rigor.f7.justification': 'EUR/USD affects EUR-denominated returns on USD assets (currency effect)',
-            'rigor.features.note': 'Macro features (blue background) proved to be the most predictive according to SHAP analysis, outperforming individual ETF technical indicators.',
-            'xai.h2': 'Model Explainability (XAI)',
-            'xai.subtitle': 'The model is not a black box. Every prediction has a quantifiable reason.',
-            'xai.what.h3': 'What Really Moves the Markets?',
-            'xai.what.p': 'SHAP analysis (SHapley Additive exPlanations) on the test set revealed that <strong>macroeconomic signals dominate over individual technical indicators</strong> for each ETF:',
-            'xai.shap.label1': 'EUR/USD 5d change',
-            'xai.shap.label2': 'VIX 5d change',
-            'xai.shap.label3': 'EUR/USD level',
-            'xai.shap.label4': 'RSI-14',
-            'xai.shap.label5': '21d Volatility',
-            'xai.conclusion': 'Conclusion: the model learned that European ETFs are driven by the macro cycle (exchange rate and global fear), not by the individual technical momentum of each asset.',
-            'xai.case.h3': '⚠️ Real Case: Liberation Day (April 2025)',
-            'xai.case.p': 'The waterfall analysis of ETF <strong>XAIX.MI</strong> (Xtrackers AI & Big Data) on April 10, 2025 is the most honest example: the model predicted a rise based on a favorable EUR/USD and moderate VIX. The market fell due to Trump\'s tariffs.',
-            'xai.case.lesson': '<strong>Academic lesson:</strong> A quantitative model is blind to political information not yet discounted in prices. The correct way to handle this is not to improve the model, but to design a risk management system that limits exposure under high uncertainty — which is exactly what the system\'s liquidity rule does.',
-            'xai.prod.h3': 'SHAP in Production',
-            'xai.prod.p': 'The <code>src/investbot_ai/xai/shap_explainer.py</code> module generates real-time explanations. Every week, the automated report includes the <strong>top 3 SHAP reasons</strong> for each prediction in human-readable language.',
-            'xai.prod.example': 'Example: <em>"The positive prediction for EUNL.DE is mainly due to: (1) EUR/USD fell 1.2% this week — historically positive for European exporters, (2) VIX below 18 — low volatility regime."</em>',
-            'chatbot.h2': 'Local AI Financial Assistant',
-            'chatbot.subtitle': 'Privacy by design: your portfolio data never leaves your device.',
-            'chatbot.badge.local': '🔒 100% Local · No Cloud APIs',
-            'chatbot.p1': 'The dashboard integrates a conversational financial assistant that runs <strong>100% locally</strong>, without sending any data to external APIs. Built on <strong>Ollama</strong> with the <strong>llama3.2:3b</strong> model (selectable at runtime), the assistant receives the dynamic session context with every query: current portfolio composition, ETF weights and weekly XGBoost predictions.',
-            'chatbot.p2': 'This enables queries like <em>"why are we in cash this week?"</em> and get a response grounded in actual model signals, not generic knowledge. The <strong>local-first</strong> design is a deliberate decision: personal financial data should not leave the user\'s device.',
-            'chatbot.impl': '<strong>⚙️ Technical implementation:</strong> The native Ollama API is used with <code>stream=True</code> for real-time responses. The dynamic context (active portfolio + weekly XGBoost predictions + ETF composition from JustETF) is injected directly into the <em>system prompt</em> of each request. No LangChain, no OpenAI — zero external service dependencies.',
-            'chatbot.pill.panel': 'Persistent floating panel',
-            'chatbot.mock.title': 'InvestBot · Local Assistant (llama3.2:3b)',
-            'chatbot.label.user': 'User',
-            'chatbot.label.bot': 'InvestBot AI',
-            'chatbot.msg1.user': 'Why are we in cash this week?',
-            'chatbot.msg1.bot': 'The XGBoost model has issued a <strong style="color:#f59e0b;">HOLD</strong> signal for all 7 ETFs this week. The main causes according to SHAP analysis are: VIX at 22.4 ("Alert" threshold), EUR/USD drop of 1.8% in 5 days and negative rolling return on CS1.PA (-2.3%). The system prioritizes capital preservation over entering a market with confirmed bearish momentum.',
-            'chatbot.msg2.user': 'What is our technology exposure?',
-            'chatbot.msg2.bot': 'Currently 0% of the portfolio is invested (cash position). When the model reactivates positions, estimated technology exposure would be ~34% via CS1.PA (S&P500, ~28% tech) and VWRL (~18% global tech), based on sector composition data extracted from JustETF.',
-            'report.h2': 'Automated Weekly Report',
-            'report.subtitle': 'Every week the system generates a self-contained HTML report with all the information needed to make the investment decision.',
-            'report.badge': '📄 Production Feature',
-            'report.h3': 'What does the report include?',
-            'report.p': 'Directly exportable to PDF from the browser, generated by <code>weekly_report.py</code> as inline HTML with print styles.',
-            'report.li1': '📈 XGBoost signals — which ETFs to buy, which to avoid',
-            'report.li2': '⚖️ Suggested capital allocation by strategy',
-            'report.li3': '🧠 Top 3 SHAP reasons for each prediction in readable text',
-            'report.li4': '📊 Performance comparison vs. previous week',
-            'report.li5': '🔍 Model traceability (version, training date, metrics)',
-            'gallery.h2': 'Platform Interface (Streamlit)',
-            'gallery.subtitle': 'Screenshots of the interactive dashboard built with Streamlit.',
-            'gallery.img1.alt': 'Main Dashboard',
-            'gallery.img2.alt': 'Portfolio Management',
-            'gallery.img3.alt': 'SHAP Analysis',
-            'gallery.img4.alt': 'Scenario Analysis',
-            'author.h2': 'About the Author & Project Motivation',
-            'author.p1': 'InvestBot-AI was born from a common frustration: the gap between the financial information we consume daily and the real expertise needed to interpret it. As a regular reader of economic press, I constantly found myself facing technical analyses that seemed more like an art reserved for a few than a reproducible science.',
-            'author.p2': 'My background as an engineer — oriented towards systems, processes and measurable outcomes — and my specialization in Data Science led me to formulate a clear hypothesis: is it possible to replace human interpretation, often subjective and inconsistent, with a quantitative, disciplined system based exclusively on empirical evidence?',
-            'author.p3': 'This project is my answer. The research showed that while predicting exogenous events is impossible, it is possible to model market risk with statistical rigor. Therefore, the philosophy of InvestBot-AI does not lie in chasing extraordinary returns, but in its ability to <strong>protect capital</strong>, knowing when it\'s time to step aside and wait.',
-            'author.img.alt': 'Photo of Luis Rodríguez López',
-            'author.btn.linkedin': 'Connect on LinkedIn',
-            'author.btn.github': 'View Repository',
-            'footer.subtitle': 'An Academic Project by Luis Rodríguez López',
-            'footer.confidential': '<strong>⚠️ Confidential Repository Notice:</strong> The modular source code (Python scripts in <code>src/</code>, models, scrapers and local assistant configuration) is kept in a private repository to comply with Master\'s thesis regulations. This page serves exclusively as a technical showcase.',
-            'footer.legal': '<strong>Financial Legal Disclaimer:</strong> Results shown are historical simulations (backtesting). They do not constitute financial advice, investment recommendations or guarantees of future returns.',
-        }
-    };
+const I18N = {
+  es: {
+    "nav.results":"Resultados","nav.how":"Cómo funciona","nav.architecture":"Arquitectura","nav.rigor":"Rigor","nav.xai":"XAI","nav.assistant":"Asistente","nav.faq":"FAQ",
+    "hero.eyebrow":"TFM · Máster en Big Data & Data Science · 2025/2026",
+    "hero.title":"InvestBot-AI<br><em>Optimización de carteras</em><br>con ML explicable.",
+    "hero.lede":"Una plataforma que recopila datos de mercado en tiempo real, los analiza con modelos de Machine Learning y decide <strong>cuándo invertir, en qué ETFs y en qué proporción</strong> — todo explicado en lenguaje natural por un asistente IA que se ejecuta localmente.",
+    "hero.meta.author":"Autor","hero.meta.period":"Período","hero.meta.stack":"Stack","hero.meta.repo":"Repositorio","hero.meta.repostate":"Privado · Confidencial",
+    "equity.title":"Backtest realista · Dic 2023 → Dic 2025",
+    "equity.caption":"10.000 € iniciales + 100 €/sem (DCA) · comisiones 0.1 % · cap 40 % por ETF",
+    "equity.event":"Aranceles · Abr 25",
+    "stats.bot.name":"InvestBot AI","stats.bot.sub":"20.121 € · sobre 19.700 € aportados",
+    "stats.mark.name":"Markowitz clásico","stats.mark.sub":"16.453 € · pérdida 3.247 €",
+    "stats.bnh.name":"Buy & Hold","stats.bnh.sub":"15.920 € · pérdida 3.780 €",
+    "cta.repo":"Ver repositorio público","cta.linkedin":"Conectar en LinkedIn",
+    "results.h2":"El sistema ganó dinero<br>en un mercado bajista.",
+    "results.lede":"Simulación de inversión en un período donde el mercado europeo cayó. Los benchmarks pasivos perdieron capital. InvestBot lo preservó manteniéndose en liquidez en los momentos correctos.",
+    "results.rules.h4":"Reglas de la simulación",
+    "results.rules.li1":"<strong>Capital inicial:</strong> 10.000 €",
+    "results.rules.li2":"<strong>DCA semanal:</strong> +100 € (total aportado: 19.700 €)",
+    "results.rules.li3":"<strong>Comisiones realistas:</strong> 0.1 % por rebalanceo",
+    "results.rules.li4":"<strong>Restricción de concentración:</strong> ≤ 40 % por activo",
+    "results.rules.li5":"<strong>Universo:</strong> 7 ETFs UCITS europeos diversificados",
+    "results.col.strategy":"Estrategia","results.col.return":"Retorno","results.col.final":"Final",
+    "results.bnh":"Buy & Hold","results.markowitz":"Markowitz",
+    "results.callout.title":"La clave del alpha:",
+    "results.callout.body":" el sistema permaneció en efectivo el 59 % de las semanas. La protección de capital en regímenes adversos generó más valor que cualquier predicción positiva acertada.",
+    "results.k1.h4":"Acierto direccional","results.k1.sub":"~6 de cada 10 predicciones correctas — significativo sobre la línea base 50 %.",
+    "results.k2.h4":"Alpha vs. mercado","results.k2.sub":"Diferencia de capital final entre InvestBot y Buy & Hold.",
+    "results.k3.h4":"Semanas en liquidez","results.k3.sub":"El sistema priorizó preservar capital frente a forzar entradas en regímenes bajistas.",
+    "how.h2":"Cómo decide<br>el sistema cada semana.",
+    "how.lede":"Cuatro fases automatizadas que convierten datos de mercado crudos en una asignación de capital con explicación lingüística.",
+    "how.s1.tag":"Ingesta","how.s1.title":"Datos de mercado",
+    "how.s1.body":"Precios OHLCV diarios de 7 ETFs UCITS, VIX y EUR/USD vía yfinance. Composición sectorial y geográfica scraped desde JustETF. Persistencia en Parquet.",
+    "how.s2.tag":"Predicción","how.s2.title":"XGBoost + Optuna",
+    "how.s2.body":"11 features con justificación financiera (momentum, RSI, volatilidad, macro). Modelo entrenado 2019–2023, validado out-of-sample en 2024–2025.",
+    "how.s3.tag":"Optimización","how.s3.title":"PyPortfolioOpt",
+    "how.s3.body":"Las predicciones positivas alimentan un Markowitz restringido (cap 40 %, no-shorting). Las negativas se traducen en posición de liquidez.",
+    "how.s4.tag":"Explicación","how.s4.title":"SHAP + Ollama",
+    "how.s4.body":"Cada decisión es desglosada por SHAP. Un LLM local (llama3.2:3b) traduce las contribuciones a lenguaje natural en el informe semanal.",
+    "arch.h2":"Arquitectura<br>de producción.",
+    "arch.lede":"Un sistema desacoplado que separa investigación (notebooks) de lógica de negocio (módulos Python en <code>src/</code>) — más allá del prototipo de TFM.",
+    "arch.right.h3":"Decisiones de ingeniería",
+    "arch.right.p1":"Datos cuantitativos en <strong>Parquet</strong> para eficiencia de I/O. Estado de cartera y ledger de operaciones en <strong>SQLite</strong> con migraciones controladas. Logging estructurado y trazabilidad por versión de modelo.",
+    "arch.right.p2":"El frontend (Streamlit) y el asistente (Ollama) son consumidores del mismo backend desacoplado — no hay lógica de negocio en la capa de presentación.",
+    "src1.num":"FUENTE 01","src1.desc":"Precios OHLCV diarios para 7 ETFs + VIX + EUR/USD. Base del entrenamiento del modelo XGBoost.",
+    "src2.num":"FUENTE 02","src2.desc":"Holdings, distribución sectorial y geográfica de cada ETF. Implementado con BeautifulSoup4 y caching local.",
+    "src3.num":"FUENTE 03","src3.desc":"Calendario económico y sentimiento técnico — para enriquecer el dashboard, no inyectados al modelo.",
+    "arch.callout.title":"Decisión de diseño:",
+    "arch.callout.body":" los datos de scraping enriquecen dashboard y asistente, pero <strong>no se inyectan al modelo XGBoost</strong>. Así el pipeline de predicción no depende de la estabilidad del HTML de terceros y mantiene reproducibilidad académica.",
+    "rigor.h2":"Rigor académico<br>y honestidad metodológica.",
+    "rigor.lede":"El sistema fue diseñado sin trampas y es transparente sobre lo que <em>no</em> puede hacer.",
+    "rigor.r1.tag":"PROTECCIÓN — DATA LEAKAGE","rigor.r1.title":"Sin contaminación temporal",
+    "rigor.r1.body":"El modelo se entrenó con datos 2019–2023 y se validó en 2024–2025 — datos que nunca había visto. Estudiar con libros viejos y aprobar con preguntas nuevas.",
+    "rigor.r2.tag":"PROTECCIÓN — OVERFITTING","rigor.r2.title":"Aprende, no memoriza",
+    "rigor.r2.body":"Regularización L1/L2, <em>early stopping</em> con validación temporal, profundidad limitada de árboles. El objetivo: reglas generalizables, no patrones espurios del training set.",
+    "rigor.r3.tag":"LÍMITES — TRANSPARENCIA","rigor.r3.title":"Lo que la IA no puede",
+    "rigor.r3.body":"Ningún modelo cuantitativo anticipa shocks políticos. Los aranceles de abril 2025 provocaron una caída que el sistema no vio venir — y eso es honesto.",
+    "rigor.features.h3":"Las 11 features del modelo · justificación teórica",
+    "rigor.features.lede":"Cada variable fue seleccionada por hipótesis financiera, no por búsqueda exhaustiva. Una garantía adicional contra el overfitting por selección de variables.",
+    "rigor.col.feature":"Feature","rigor.col.type":"Tipo","rigor.col.justification":"Justificación financiera",
+    "rigor.t1.type":"Momentum","rigor.t1.body":"Captura el efecto momentum a corto y medio plazo (Jegadeesh & Titman, 1993).",
+    "rigor.t2.type":"Reversión","rigor.t2.body":"RSI > 70 sobrecompra, < 30 potencial rebote (mean-reversion).",
+    "rigor.t3.type":"Riesgo","rigor.t3.body":"Volatilidad realizada como proxy de incertidumbre y régimen de mercado.",
+    "rigor.t4.type":"Tendencia","rigor.t4.body":"Precio relativo a media móvil 50d — por encima = tendencia alcista confirmada.",
+    "rigor.t5.type":"Reversión","rigor.t5.body":"Posición dentro de Bandas de Bollinger; extremos indican reversión estadística.",
+    "rigor.t6.type":"Macro · Miedo","rigor.t6.body":"VIX elevado reduce apetito por riesgo global; cambio en 5d captura giros de régimen.",
+    "rigor.t7.type":"Macro · Divisa","rigor.t7.body":"EUR/USD afecta la rentabilidad en EUR de activos USD (efecto divisa).",
+    "rigor.features.note":"Las features macro (resaltadas) resultaron las más predictivas según SHAP — superando a los indicadores técnicos del ETF individual.",
+    "xai.h2":"Explicabilidad.<br>Cada predicción tiene una razón.",
+    "xai.lede":"El modelo no es una caja negra. SHAP (SHapley Additive exPlanations) descompone cada decisión en contribuciones cuantificables por feature.",
+    "xai.left.h3":"¿Qué mueve los mercados?",
+    "xai.left.body":"El análisis SHAP sobre el conjunto de test reveló que las <strong>señales macroeconómicas dominan sobre los indicadores técnicos individuales</strong> de cada ETF.",
+    "xai.f1":"Cambio EUR/USD · 5d","xai.f2":"Cambio VIX · 5d","xai.f3":"Nivel EUR/USD","xai.f4":"RSI-14","xai.f5":"Volatilidad · 21d",
+    "xai.left.note":"Conclusión: los ETFs europeos se mueven por el ciclo macro (tipo de cambio + miedo global), no por momentum técnico individual.",
+    "xai.case.tag":"CASO REAL · ABRIL 2025","xai.case.title":"Liberation Day",
+    "xai.case.body":"El waterfall del ETF <strong>XAIX.MI</strong> (Xtrackers AI & Big Data) el 10 de abril de 2025 es el ejemplo más honesto del sistema: el modelo predijo subida basándose en EUR/USD favorable y VIX moderado. El mercado cayó por los aranceles anunciados.",
+    "xai.case.lesson":"<strong>Lección:</strong> un modelo cuantitativo es ciego a información política no descontada. La respuesta no es mejorar el modelo — es diseñar un sistema de gestión de riesgo que limite la exposición ante alta incertidumbre. Exactamente lo que hace la regla de liquidez.",
+    "xai.prod.tag":"SHAP EN PRODUCCIÓN","xai.prod.title":"Razones legibles, semanalmente",
+    "xai.prod.body":"El módulo <code>src/investbot_ai/xai/shap_explainer.py</code> genera explicaciones en tiempo real. El informe semanal incluye las <strong>top 3 razones SHAP</strong> de cada predicción en lenguaje legible.",
+    "xai.prod.example":"Ejemplo: <em>\"La predicción positiva para EUNL.DE se debe a: (1) EUR/USD bajó 1.2 % esta semana — históricamente positivo para exportadoras europeas; (2) VIX por debajo de 18 — régimen de baja volatilidad.\"</em>",
+    "assistant.h2":"Asistente IA local.<br>Privacidad por diseño.",
+    "assistant.lede":"Tus datos financieros nunca salen de tu dispositivo. Ollama + llama3.2:3b ejecutándose localmente, con contexto dinámico de la cartera inyectado en cada respuesta.",
+    "assistant.tag1":"100 % LOCAL · SIN APIs CLOUD","assistant.tag2":"Ollama · llama3.2:3b",
+    "assistant.p1":"El dashboard integra un asistente conversacional que funciona <strong>100 % en local</strong>. Construido sobre <strong>Ollama</strong> con modelo seleccionable en runtime, recibe en cada query el contexto dinámico: composición de cartera, pesos por ETF y predicciones XGBoost de la semana.",
+    "assistant.p2":"Esto permite consultas como <em>\"¿por qué estoy en liquidez esta semana?\"</em> y obtener respuesta fundamentada en señales reales del modelo, no en conocimiento genérico. La decisión <strong>local-first</strong> es deliberada: los datos financieros personales no deben salir del dispositivo.",
+    "assistant.tech.title":"Implementación técnica:",
+    "assistant.tech.body":" API nativa de Ollama con <code>stream=True</code> para respuestas en streaming. El contexto (cartera + predicciones + composición ETF de JustETF) se inyecta directamente en el <em>system prompt</em>. Sin LangChain, sin OpenAI — dependencias cero.",
+    "assistant.mock.title":"InvestBot · Asistente Local (llama3.2:3b)",
+    "assistant.lbl.user":"Usuario","assistant.lbl.bot":"InvestBot AI",
+    "assistant.q1":"¿Por qué estamos en liquidez esta semana?",
+    "assistant.a1":"El modelo XGBoost ha emitido señal <strong style=\"color:#d4a44d;\">HOLD</strong> para los 7 ETFs. Causas principales según SHAP: VIX en zona 22.4 (umbral de \"Alerta\"), caída del EUR/USD del 1.8 % en 5 días y retorno rolling negativo en CS1.PA (−2.3 %). El sistema prioriza preservación frente a momentum bajista confirmado.",
+    "assistant.q2":"¿Qué exposición tenemos a tecnología?",
+    "assistant.a2":"Actualmente 0 % invertido (cash). Cuando el modelo reactive posiciones, la exposición tech estimada será ~34 % vía CS1.PA (S&P500, ~28 % tech) y VWRL (~18 % tech global), según composición sectorial de JustETF.",
+    "report.h2":"Informe semanal<br>+ interfaz Streamlit.",
+    "report.lede":"Cada lunes el sistema genera un informe HTML autocontenido exportable a PDF. El dashboard interactivo permite explorar predicciones, escenarios y composición de cartera.",
+    "report.tag":"FUNCIONALIDAD DE PRODUCCIÓN","report.h3":"¿Qué incluye el informe?",
+    "report.p":"Generado por <code>weekly_report.py</code> como HTML con estilos para impresión, exportable a PDF directamente desde el navegador.",
+    "report.li1":"Señales XGBoost — qué ETFs comprar, cuáles evitar",
+    "report.li2":"Asignación de capital sugerida por estrategia",
+    "report.li3":"Top 3 razones SHAP de cada predicción en texto legible",
+    "report.li4":"Comparativa de rendimiento vs. semana anterior",
+    "report.li5":"Trazabilidad del modelo (versión, fecha de entreno, métricas)",
+    "gallery.h3":"Capturas del dashboard Streamlit",
+    "shot1.title":"Dashboard principal · señales semanales",
+    "shot2.title":"Gestión de cartera y rebalanceo",
+    "shot3.title":"Análisis SHAP por predicción",
+    "shot4.title":"Análisis de escenarios y stress-test",
+    "gallery.note":"Capturas pendientes de actualización con la versión final del dashboard.",
+    "faq.h2":"Preguntas frecuentes.",
+    "faq.lede":"Las dudas honestas que cualquier evaluador académico o profesional financiero formularía ante este proyecto.",
+    "faq.q1":"¿Por qué los resultados no son aún mejores?",
+    "faq.a1":"Porque el sistema fue diseñado con honestidad. No hay look-ahead bias, no hay cherry-picking del período de test, no hay fricciones omitidas. Un +2.1 % en un mercado que cae −19.2 % representa más de 21 puntos porcentuales de alpha — un resultado significativo precisamente porque la metodología no admite trampas.",
+    "faq.q2":"¿Funcionará igual en el futuro?",
+    "faq.a2":"No hay garantía. Los modelos cuantitativos son válidos mientras el régimen de mercado se asemeje al período de entrenamiento. Por eso el sistema incluye SHAP — para detectar cuándo las features dominantes cambian y el modelo necesita reentrenarse.",
+    "faq.q3":"¿Por qué no añadir noticias o sentimiento de redes sociales?",
+    "faq.a3":"Tres razones: (1) calidad de datos limitada y sesgada en feeds gratuitos; (2) elevado coste computacional para procesar texto en tiempo real localmente; (3) decisión metodológica — un sistema cuantitativo robusto debe asumir su ceguera ante shocks políticos y compensarla con gestión de riesgo, no con más features ruidosas.",
+    "faq.q4":"¿Por qué Ollama local en vez de GPT-4 o Claude?",
+    "faq.a4":"Privacidad y reproducibilidad. Los datos de cartera personal no deben enviarse a APIs externas. Además, el sistema necesita ser reproducible al evaluar el TFM — una API cloud podría devolver respuestas distintas con el tiempo. llama3.2:3b corre en CPU en cualquier portátil moderno.",
+    "faq.q5":"¿Es esto asesoramiento financiero?",
+    "faq.a5":"No. Es un trabajo académico con fines de investigación. Los resultados son simulaciones históricas. La inversión real conlleva riesgos y requiere asesoramiento profesional regulado.",
+    "faq.q6":"¿Por qué el repositorio es privado?",
+    "faq.a6":"Las normativas del TFM exigen confidencialidad del código hasta la defensa. Esta página funciona como showcase técnico mientras tanto. Tras la defensa el repositorio se hará público.",
+    "author.num":"AUTOR","author.h2":"Sobre el autor<br>y la motivación del proyecto.",
+    "author.p1":"InvestBot-AI nace de una frustración común: la brecha entre la información financiera que consumimos a diario y la experiencia real necesaria para interpretarla. Como lector habitual de prensa económica, me encontraba ante análisis técnicos que parecían más un arte reservado a unos pocos que una ciencia reproducible.",
+    "author.p2":"Mi formación como ingeniero —orientada a sistemas, procesos y resultados medibles— y mi especialización en Data Science me llevaron a una hipótesis clara: ¿es posible reemplazar la interpretación humana, frecuentemente subjetiva e inconsistente, por un sistema cuantitativo, disciplinado y basado exclusivamente en evidencia empírica?",
+    "author.p3":"Este proyecto es mi respuesta. La investigación demostró que, si bien predecir eventos exógenos es imposible, sí es posible modelar el riesgo de mercado con rigor estadístico. La filosofía de InvestBot-AI no reside en perseguir rentabilidades extraordinarias, sino en su capacidad para <strong>proteger el capital</strong>, sabiendo cuándo dar un paso al lado y esperar.",
+    "author.btn1":"Conectar en LinkedIn","author.btn2":"Ver repositorio",
+    "footer.tagline":"Un proyecto académico de Luis Rodríguez López. Trabajo de Fin de Máster · 2025/2026.",
+    "footer.btn.repo":"→ Repositorio","footer.btn.linkedin":"LinkedIn",
+    "footer.nav.title":"Navegación",
+    "footer.nav.results":"Resultados","footer.nav.how":"Cómo funciona","footer.nav.architecture":"Arquitectura","footer.nav.xai":"Explicabilidad","footer.nav.faq":"FAQ",
+    "footer.disclaimer1":"<strong>⚠ Aviso de repositorio confidencial:</strong> el código fuente modular (módulos Python en <code>src/</code>, modelos, scrapers y configuración del asistente local) se mantiene en repositorio privado para cumplir las normativas del TFM. Esta página funciona exclusivamente como showcase técnico.",
+    "footer.disclaimer2":"<strong>Aviso legal financiero:</strong> los resultados mostrados son simulaciones históricas (backtesting). No constituyen asesoramiento financiero, recomendaciones de inversión ni garantía de retornos futuros.",
+    "footer.built":"CONSTRUIDO CON PYTHON · XGBOOST · OLLAMA · STREAMLIT"
+  },
+  en: {
+    "nav.results":"Results","nav.how":"How it works","nav.architecture":"Architecture","nav.rigor":"Rigor","nav.xai":"XAI","nav.assistant":"Assistant","nav.faq":"FAQ",
+    "hero.eyebrow":"MASTER'S THESIS · BIG DATA & DATA SCIENCE · 2025/2026",
+    "hero.title":"InvestBot-AI<br><em>Portfolio optimization</em><br>with explainable ML.",
+    "hero.lede":"A platform that collects real-time market data, analyzes it with Machine Learning models and decides <strong>when to invest, in which ETFs and in what proportion</strong> — all explained in natural language by an AI assistant running locally.",
+    "hero.meta.author":"Author","hero.meta.period":"Period","hero.meta.stack":"Stack","hero.meta.repo":"Repository","hero.meta.repostate":"Private · Confidential",
+    "equity.title":"Realistic backtest · Dec 2023 → Dec 2025",
+    "equity.caption":"€10,000 initial + €100/wk (DCA) · 0.1% commissions · 40% per-ETF cap",
+    "equity.event":"Tariffs · Apr 25",
+    "stats.bot.name":"InvestBot AI","stats.bot.sub":"€20,121 · on €19,700 contributed",
+    "stats.mark.name":"Classic Markowitz","stats.mark.sub":"€16,453 · loss €3,247",
+    "stats.bnh.name":"Buy & Hold","stats.bnh.sub":"€15,920 · loss €3,780",
+    "cta.repo":"View public repository","cta.linkedin":"Connect on LinkedIn",
+    "results.h2":"The system made money<br>in a bear market.",
+    "results.lede":"Investment simulation in a period when the European market fell. Passive benchmarks lost capital. InvestBot preserved it by staying in cash at the right moments.",
+    "results.rules.h4":"Simulation rules",
+    "results.rules.li1":"<strong>Initial capital:</strong> €10,000",
+    "results.rules.li2":"<strong>Weekly DCA:</strong> +€100 (total contributed: €19,700)",
+    "results.rules.li3":"<strong>Realistic commissions:</strong> 0.1% per rebalance",
+    "results.rules.li4":"<strong>Concentration limit:</strong> ≤ 40% per asset",
+    "results.rules.li5":"<strong>Universe:</strong> 7 diversified European UCITS ETFs",
+    "results.col.strategy":"Strategy","results.col.return":"Return","results.col.final":"Final",
+    "results.bnh":"Buy & Hold","results.markowitz":"Markowitz",
+    "results.callout.title":"The alpha key:",
+    "results.callout.body":" the system stayed in cash 59% of the weeks. Capital protection in adverse regimes generated more value than any successful positive prediction.",
+    "results.k1.h4":"Directional accuracy","results.k1.sub":"~6 of every 10 predictions correct — significant above the 50% baseline.",
+    "results.k2.h4":"Alpha vs. market","results.k2.sub":"Final capital difference between InvestBot and Buy & Hold.",
+    "results.k3.h4":"Weeks in cash","results.k3.sub":"The system prioritized preserving capital over forcing entries in bearish regimes.",
+    "how.h2":"How the system<br>decides every week.",
+    "how.lede":"Four automated phases that turn raw market data into a capital allocation with linguistic explanation.",
+    "how.s1.tag":"Ingestion","how.s1.title":"Market data",
+    "how.s1.body":"Daily OHLCV prices for 7 UCITS ETFs, VIX and EUR/USD via yfinance. Sector and geographic composition scraped from JustETF. Persisted in Parquet.",
+    "how.s2.tag":"Prediction","how.s2.title":"XGBoost + Optuna",
+    "how.s2.body":"11 features with financial justification (momentum, RSI, volatility, macro). Model trained 2019–2023, validated out-of-sample on 2024–2025.",
+    "how.s3.tag":"Optimization","how.s3.title":"PyPortfolioOpt",
+    "how.s3.body":"Positive predictions feed a constrained Markowitz (40% cap, no shorting). Negative ones translate to a cash position.",
+    "how.s4.tag":"Explanation","how.s4.title":"SHAP + Ollama",
+    "how.s4.body":"Each decision is decomposed by SHAP. A local LLM (llama3.2:3b) translates contributions into natural language in the weekly report.",
+    "arch.h2":"Production-grade<br>architecture.",
+    "arch.lede":"A decoupled system that separates research (notebooks) from business logic (Python modules in <code>src/</code>) — beyond a TFM prototype.",
+    "arch.right.h3":"Engineering decisions",
+    "arch.right.p1":"Quantitative data in <strong>Parquet</strong> for I/O efficiency. Portfolio state and operations ledger in <strong>SQLite</strong> with controlled migrations. Structured logging and traceability per model version.",
+    "arch.right.p2":"Frontend (Streamlit) and assistant (Ollama) are consumers of the same decoupled backend — no business logic in the presentation layer.",
+    "src1.num":"SOURCE 01","src1.desc":"Daily OHLCV prices for 7 ETFs + VIX + EUR/USD. Backbone of XGBoost training.",
+    "src2.num":"SOURCE 02","src2.desc":"Holdings, sector and geographic distribution per ETF. Implemented with BeautifulSoup4 and local caching.",
+    "src3.num":"SOURCE 03","src3.desc":"Economic calendar and technical sentiment — to enrich the dashboard, not injected into the model.",
+    "arch.callout.title":"Design decision:",
+    "arch.callout.body":" scraped data enriches dashboard and assistant, but is <strong>not injected into the XGBoost model</strong>. This way the prediction pipeline doesn't depend on third-party HTML stability and maintains academic reproducibility.",
+    "rigor.h2":"Academic rigor<br>and methodological honesty.",
+    "rigor.lede":"The system was designed without shortcuts and is transparent about what it <em>cannot</em> do.",
+    "rigor.r1.tag":"PROTECTION — DATA LEAKAGE","rigor.r1.title":"No temporal contamination",
+    "rigor.r1.body":"The model was trained on 2019–2023 data and validated on 2024–2025 — data it had never seen. Like studying with old books and passing an exam with brand-new questions.",
+    "rigor.r2.tag":"PROTECTION — OVERFITTING","rigor.r2.title":"Learns, doesn't memorize",
+    "rigor.r2.body":"L1/L2 regularization, <em>early stopping</em> with temporal validation, limited tree depth. The goal: generalizable rules, not spurious training-set patterns.",
+    "rigor.r3.tag":"LIMITS — TRANSPARENCY","rigor.r3.title":"What AI cannot",
+    "rigor.r3.body":"No quantitative model anticipates political shocks. The April 2025 tariffs caused a drop the system didn't see coming — and that's honest.",
+    "rigor.features.h3":"The 11 model features · theoretical justification",
+    "rigor.features.lede":"Each variable was selected by financial hypothesis, not by exhaustive search. An additional safeguard against overfitting via variable selection.",
+    "rigor.col.feature":"Feature","rigor.col.type":"Type","rigor.col.justification":"Financial justification",
+    "rigor.t1.type":"Momentum","rigor.t1.body":"Captures short and medium-term momentum effect (Jegadeesh & Titman, 1993).",
+    "rigor.t2.type":"Reversion","rigor.t2.body":"RSI > 70 overbought, < 30 potential bounce (mean-reversion).",
+    "rigor.t3.type":"Risk","rigor.t3.body":"Realized volatility as a proxy for uncertainty and market regime.",
+    "rigor.t4.type":"Trend","rigor.t4.body":"Price relative to 50d moving average — above = confirmed uptrend.",
+    "rigor.t5.type":"Reversion","rigor.t5.body":"Position within Bollinger Bands; extremes indicate statistical reversion.",
+    "rigor.t6.type":"Macro · Fear","rigor.t6.body":"High VIX reduces global risk appetite; 5d change captures regime shifts.",
+    "rigor.t7.type":"Macro · Currency","rigor.t7.body":"EUR/USD affects EUR-denominated returns on USD assets (currency effect).",
+    "rigor.features.note":"Macro features (highlighted) proved most predictive per SHAP — outperforming individual ETF technical indicators.",
+    "xai.h2":"Explainability.<br>Every prediction has a reason.",
+    "xai.lede":"The model is not a black box. SHAP (SHapley Additive exPlanations) decomposes each decision into quantifiable per-feature contributions.",
+    "xai.left.h3":"What really moves markets?",
+    "xai.left.body":"SHAP analysis on the test set revealed that <strong>macroeconomic signals dominate over individual technical indicators</strong> for each ETF.",
+    "xai.f1":"EUR/USD change · 5d","xai.f2":"VIX change · 5d","xai.f3":"EUR/USD level","xai.f4":"RSI-14","xai.f5":"21d Volatility",
+    "xai.left.note":"Conclusion: European ETFs are driven by the macro cycle (FX rate + global fear), not by individual technical momentum.",
+    "xai.case.tag":"REAL CASE · APRIL 2025","xai.case.title":"Liberation Day",
+    "xai.case.body":"The waterfall analysis of ETF <strong>XAIX.MI</strong> (Xtrackers AI & Big Data) on April 10, 2025 is the most honest example: the model predicted a rise based on favorable EUR/USD and moderate VIX. The market fell on the announced tariffs.",
+    "xai.case.lesson":"<strong>Lesson:</strong> a quantitative model is blind to political information not yet priced in. The answer is not to improve the model — it's to design a risk management system that limits exposure under high uncertainty. Exactly what the liquidity rule does.",
+    "xai.prod.tag":"SHAP IN PRODUCTION","xai.prod.title":"Readable reasons, weekly",
+    "xai.prod.body":"The <code>src/investbot_ai/xai/shap_explainer.py</code> module generates real-time explanations. The weekly report includes the <strong>top 3 SHAP reasons</strong> for each prediction in human-readable language.",
+    "xai.prod.example":"Example: <em>\"The positive prediction for EUNL.DE is mainly due to: (1) EUR/USD fell 1.2% this week — historically positive for European exporters; (2) VIX below 18 — low volatility regime.\"</em>",
+    "assistant.h2":"Local AI assistant.<br>Privacy by design.",
+    "assistant.lede":"Your financial data never leaves your device. Ollama + llama3.2:3b running locally, with dynamic portfolio context injected on every response.",
+    "assistant.tag1":"100% LOCAL · NO CLOUD APIs","assistant.tag2":"Ollama · llama3.2:3b",
+    "assistant.p1":"The dashboard integrates a conversational assistant that runs <strong>100% locally</strong>. Built on <strong>Ollama</strong> with runtime-selectable model, it receives dynamic context with each query: portfolio composition, ETF weights and weekly XGBoost predictions.",
+    "assistant.p2":"This enables queries like <em>\"why are we in cash this week?\"</em> and getting an answer grounded in actual model signals, not generic knowledge. The <strong>local-first</strong> design is deliberate: personal financial data should not leave the user's device.",
+    "assistant.tech.title":"Technical implementation:",
+    "assistant.tech.body":" Native Ollama API with <code>stream=True</code> for streaming responses. Context (portfolio + predictions + ETF composition from JustETF) is injected directly into the <em>system prompt</em>. No LangChain, no OpenAI — zero external dependencies.",
+    "assistant.mock.title":"InvestBot · Local Assistant (llama3.2:3b)",
+    "assistant.lbl.user":"User","assistant.lbl.bot":"InvestBot AI",
+    "assistant.q1":"Why are we in cash this week?",
+    "assistant.a1":"The XGBoost model issued <strong style=\"color:#d4a44d;\">HOLD</strong> for all 7 ETFs. Main causes per SHAP: VIX at 22.4 (\"Alert\" threshold), EUR/USD drop of 1.8% in 5 days and negative rolling return on CS1.PA (−2.3%). The system prioritizes preservation over confirmed bearish momentum.",
+    "assistant.q2":"What's our technology exposure?",
+    "assistant.a2":"Currently 0% invested (cash). When the model reactivates positions, estimated tech exposure will be ~34% via CS1.PA (S&P500, ~28% tech) and VWRL (~18% global tech), per JustETF sector composition.",
+    "report.h2":"Weekly report<br>+ Streamlit interface.",
+    "report.lede":"Every Monday the system generates a self-contained HTML report exportable to PDF. The interactive dashboard lets you explore predictions, scenarios and portfolio composition.",
+    "report.tag":"PRODUCTION FEATURE","report.h3":"What does the report include?",
+    "report.p":"Generated by <code>weekly_report.py</code> as HTML with print styles, exportable to PDF directly from the browser.",
+    "report.li1":"XGBoost signals — which ETFs to buy, which to avoid",
+    "report.li2":"Suggested capital allocation by strategy",
+    "report.li3":"Top 3 SHAP reasons per prediction in readable text",
+    "report.li4":"Performance comparison vs. previous week",
+    "report.li5":"Model traceability (version, training date, metrics)",
+    "gallery.h3":"Streamlit dashboard screenshots",
+    "shot1.title":"Main dashboard · weekly signals",
+    "shot2.title":"Portfolio management and rebalancing",
+    "shot3.title":"SHAP analysis per prediction",
+    "shot4.title":"Scenario analysis and stress-test",
+    "gallery.note":"Screenshots pending update with the final dashboard version.",
+    "faq.h2":"Frequently asked questions.",
+    "faq.lede":"The honest doubts any academic evaluator or financial professional would raise about this project.",
+    "faq.q1":"Why aren't the results even better?",
+    "faq.a1":"Because the system was designed honestly. No look-ahead bias, no test-period cherry-picking, no omitted frictions. A +2.1% in a market that falls −19.2% represents over 21 percentage points of alpha — a significant result precisely because the methodology admits no shortcuts.",
+    "faq.q2":"Will it work the same in the future?",
+    "faq.a2":"There's no guarantee. Quantitative models hold while the market regime resembles the training period. That's why the system includes SHAP — to detect when dominant features change and the model needs retraining.",
+    "faq.q3":"Why not add news or social media sentiment?",
+    "faq.a3":"Three reasons: (1) limited and biased data quality in free feeds; (2) high computational cost to process text in real time locally; (3) methodological choice — a robust quantitative system must accept its blindness to political shocks and offset it with risk management, not noisier features.",
+    "faq.q4":"Why local Ollama instead of GPT-4 or Claude?",
+    "faq.a4":"Privacy and reproducibility. Personal portfolio data should not be sent to external APIs. Also, the system needs to be reproducible when grading the TFM — a cloud API could return different answers over time. llama3.2:3b runs on CPU on any modern laptop.",
+    "faq.q5":"Is this financial advice?",
+    "faq.a5":"No. It is academic research. Results are historical simulations. Real investing involves risk and requires regulated professional advice.",
+    "faq.q6":"Why is the repository private?",
+    "faq.a6":"TFM regulations require code confidentiality until defense. This page serves as a technical showcase in the meantime. After defense the repository will be made public.",
+    "author.num":"AUTHOR","author.h2":"About the author<br>and project motivation.",
+    "author.p1":"InvestBot-AI was born from a common frustration: the gap between the financial information we consume daily and the real expertise needed to interpret it. As a regular reader of economic press, I constantly faced technical analyses that seemed more like an art reserved for a few than a reproducible science.",
+    "author.p2":"My background as an engineer — oriented toward systems, processes and measurable outcomes — and my Data Science specialization led me to a clear hypothesis: is it possible to replace human interpretation, often subjective and inconsistent, with a quantitative, disciplined system based exclusively on empirical evidence?",
+    "author.p3":"This project is my answer. Research showed that while predicting exogenous events is impossible, market risk can be modeled with statistical rigor. The philosophy of InvestBot-AI does not lie in chasing extraordinary returns, but in its ability to <strong>protect capital</strong>, knowing when to step aside and wait.",
+    "author.btn1":"Connect on LinkedIn","author.btn2":"View repository",
+    "footer.tagline":"An academic project by Luis Rodríguez López. Master's Thesis · 2025/2026.",
+    "footer.btn.repo":"→ Repository","footer.btn.linkedin":"LinkedIn",
+    "footer.nav.title":"Navigation",
+    "footer.nav.results":"Results","footer.nav.how":"How it works","footer.nav.architecture":"Architecture","footer.nav.xai":"Explainability","footer.nav.faq":"FAQ",
+    "footer.disclaimer1":"<strong>⚠ Confidential repository notice:</strong> the modular source code (Python modules in <code>src/</code>, models, scrapers and local assistant configuration) is kept in a private repository to comply with master's thesis regulations. This page works exclusively as a technical showcase.",
+    "footer.disclaimer2":"<strong>Financial legal disclaimer:</strong> results shown are historical simulations (backtesting). They do not constitute financial advice, investment recommendations or guarantees of future returns.",
+    "footer.built":"BUILT WITH PYTHON · XGBOOST · OLLAMA · STREAMLIT"
+  }
+};
 
-    // ── I18N ENGINE ───────────────────────────────────────────────────────────
-    let currentLang = localStorage.getItem('investbot-lang') || 'es';
+let lang = localStorage.getItem('ib-lang') || 'es';
+function applyLang(L){
+  const t = I18N[L];
+  document.querySelectorAll('[data-i18n]').forEach(el=>{
+    const k = el.getAttribute('data-i18n');
+    if(t[k] !== undefined) el.textContent = t[k];
+  });
+  document.querySelectorAll('[data-i18n-html]').forEach(el=>{
+    const k = el.getAttribute('data-i18n-html');
+    if(t[k] !== undefined) el.innerHTML = t[k];
+  });
+  document.documentElement.lang = L;
+  document.getElementById('lang-es').classList.toggle('active', L==='es');
+  document.getElementById('lang-en').classList.toggle('active', L==='en');
+  localStorage.setItem('ib-lang', L);
+  lang = L;
+}
+document.getElementById('lang').addEventListener('click', ()=>applyLang(lang==='es'?'en':'es'));
 
-    function applyLang(lang) {
-        const t = translations[lang];
-        document.querySelectorAll('[data-i18n]').forEach(el => {
-            const key = el.getAttribute('data-i18n');
-            if (t[key] !== undefined) el.textContent = t[key];
-        });
-        document.querySelectorAll('[data-i18n-html]').forEach(el => {
-            const key = el.getAttribute('data-i18n-html');
-            if (t[key] !== undefined) el.innerHTML = t[key];
-        });
-        document.querySelectorAll('[data-i18n-attr]').forEach(el => {
-            const val = el.getAttribute('data-i18n-attr');
-            const [attr, key] = val.split(':');
-            if (t[key] !== undefined) el.setAttribute(attr, t[key]);
-        });
-        document.documentElement.lang = lang;
-        document.getElementById('lang-es').classList.toggle('active', lang === 'es');
-        document.getElementById('lang-en').classList.toggle('active', lang === 'en');
-        localStorage.setItem('investbot-lang', lang);
-        currentLang = lang;
-    }
+const ham = document.getElementById('hamburger');
+const menu = document.getElementById('menu');
+ham.addEventListener('click', ()=>menu.classList.toggle('open'));
+menu.querySelectorAll('a').forEach(a=>a.addEventListener('click', ()=>menu.classList.remove('open')));
 
-    // ── LANGUAGE TOGGLE ───────────────────────────────────────────────────────
-    document.getElementById('lang-toggle').addEventListener('click', () => {
-        applyLang(currentLang === 'es' ? 'en' : 'es');
-    });
-
-    // ── HAMBURGER ─────────────────────────────────────────────────────────────
-    const hamburger = document.getElementById('hamburger');
-    const menu = document.getElementById('nav-menu');
-    hamburger.addEventListener('click', () => {
-        const isOpen = menu.classList.toggle('open');
-        hamburger.setAttribute('aria-expanded', isOpen);
-    });
-    menu.querySelectorAll('a').forEach(link => {
-        link.addEventListener('click', () => {
-            menu.classList.remove('open');
-            hamburger.setAttribute('aria-expanded', 'false');
-        });
-    });
-
-    // ── INIT ──────────────────────────────────────────────────────────────────
-    applyLang(currentLang);
+applyLang(lang);
 </script>
 </body>
 </html>
